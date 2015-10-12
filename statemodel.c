@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 // Define the initial state.
-static state_t* current_state = & opened; 
+static state_t* current_state = & opened;
 
 void handle_event( event current_event)
 {
@@ -15,18 +15,26 @@ void handle_event( event current_event)
     next_state = NULL;
     switch( current_event ) // exit current_state and have the appropriate effect
     {
-        case CLOSE_BUTTON_PRESSED:
-            next_state = current_state->close_button_pressed();
+        case OrderRcvd:
+            next_state = current_state->order_rcvd();
             break;
-        case CLOSED_DETECTED:
-            next_state = current_state->closed_detected();
+        case InvalidPymnt:
+            next_state = current_state->invalid_pymnt();
             break;
-        case OPEN_BUTTON_PRESSED:
-            next_state = current_state->open_button_pressed();
+        case ValidPymnt:
+            next_state = current_state->valid_pymnt();
             break;
-        case OPENED_DETECTED:
-            next_state = current_state->opened_detected();
+        case ManufFailed:
+            next_state = current_state->manuf_failed();
             break;
+        case ManufCompleted:
+            next_state = current_state->manuf_completed();
+            break;
+        case LostPackage:
+            next_state = current_state->lost_package();
+            break;
+        case Received:
+            next_state = current_state->received();
     }
 
     if (next_state != NULL)
