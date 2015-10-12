@@ -6,9 +6,9 @@
 #include <stdio.h>
 
 // Define the initial state.
-static state_t* current_state = & opened;
+static state_t* current_state = &accepting;
 
-void handle_event( event current_event)
+void handle_event(event_t current_event)
 {
     state_t* next_state;
 
