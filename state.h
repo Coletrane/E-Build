@@ -12,12 +12,15 @@ typedef     void        action(void);
 
 // Define the formate of a state struct.
 struct state {
-    event_handler*  close_button_pressed;
-    event_handler*  closed_detected;
-    event_handler*  open_button_pressed;
-    event_handler*  opened_detected;
-    action*         entry_to;
-    action*         exit_from;
+    event_handler *  order_received;
+    event_handler *  invalid_payment;
+    event_handler *  valid_payment;
+    event_handler *  manufacture_fail;
+    event_handler *  manufacture_complete;
+    event_handler *  received;
+    event_handler *  lost_package;
+    action *         entry_to;
+    action *         exit_from;
 };
 
 // Declare variable to hold pointers to the default event handler and

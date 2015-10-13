@@ -10,30 +10,30 @@ static state_t* current_state = &accepting;
 
 void handle_event(event_t current_event)
 {
-    state_t* next_state;
+    state_t * next_state;
 
     next_state = NULL;
     switch( current_event ) // exit current_state and have the appropriate effect
     {
-        case OrderRcvd:
-            next_state = current_state->order_rcvd();
+        case ORDER_RECEIVED:
+            next_state = current_state->order_received();
             break;
-        case InvalidPymnt:
-            next_state = current_state->invalid_pymnt();
+        case INVALID_PAYMENT:
+            next_state = current_state->invalid_payment();
             break;
-        case ValidPymnt:
-            next_state = current_state->valid_pymnt();
+        case VALID_PAYMENT:
+            next_state = current_state->valid_payment();
             break;
-        case ManufFailed:
-            next_state = current_state->manuf_failed();
+        case MANUFACTURE_FAIL:
+            next_state = current_state->manufacture_fail();
             break;
-        case ManufCompleted:
-            next_state = current_state->manuf_completed();
+        case MANUFACTURE_COMPLETE:
+            next_state = current_state->manufacture_complete();
             break;
-        case LostPackage:
+        case LOST_PACKAGE:
             next_state = current_state->lost_package();
             break;
-        case Received:
+        case RECEIVED:
             next_state = current_state->received();
     }
 

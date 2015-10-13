@@ -3,18 +3,31 @@
 
 #include "shipping.h"
 #include "statemodel.h"
+#include "hardware.h"
+
+state_t shipping = {
+    default_event_handler,      // order_received
+    default_event_handler,      // invalid_payment
+    default_event_handler,      // valid_payment 
+    default_event_handler,	    // manufacture_fail
+    default_event_handler,		// manufacture_complete
+    received,					// received
+    lost_package,				// lost_package
+    entry_to,                   // entry
+    default_action              // exit
+}
 
 state_t* lost_package()
 {
-  Refund();
-  UpdateStats(LOST);
+  refund();
+  updateStats(LOST);
   return &accepting;
 }
 
 state_t* received()
 {
-  StartWarranty();
-  UpdateStats(DONE);
+  startWarranty();
+  updateStats(DONE);
   return &accepting;
 }
 

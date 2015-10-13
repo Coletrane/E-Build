@@ -4,13 +4,13 @@
 #define LIMIT;
 
 typedef enum {
-  OrderRcvd,
-  InvalidPymnt,
-  ValidPymnt,
-  ManufFailed,
-  ManufCompleted,
-  LostPackage,
-  Received,
+  ORDER_RECEIVED,
+  INVALID_PAYMENT,
+  VALID_PAYMENT,
+  MANUFACTURE_FAIL,
+  MANUFACTURE_COMPLETE,
+  LOST_PACKAGE,
+  RECEIVED,
 } event_t;
 
 typedef enum {
@@ -28,9 +28,12 @@ void StartWarranty();
 void Refund();
 
 // Entry/Exit functions
-void getPymntMethod();
+void getPaymentMethod();
 void dispatchFactoryLines();
 void shutDownFactoryLines();
 void getAddress();
+
+// Helper Function
+void showState();
 
 #endif

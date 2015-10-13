@@ -3,8 +3,8 @@
 
 #include "state.h"
 
-state_t*  manuf_failed();
-state_t*  manuf_completed();
+state_t*  manufacture_fail();
+state_t*  manufacture_complete();
 void      entry_to();
 void      exit_from();
 
