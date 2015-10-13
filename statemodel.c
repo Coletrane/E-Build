@@ -8,14 +8,16 @@
 // Define the initial state.
 static state_t* current_state = &accepting;
 
-void handle_event(event_t current_event)
+void handle_event(event current_event)
 {
     state_t * next_state;
 
     next_state = NULL;
+    printf("Handling event\n");
     switch( current_event ) // exit current_state and have the appropriate effect
     {
         case ORDER_RECEIVED:
+            printf("Order received\n");
             next_state = current_state->order_received();
             break;
         case INVALID_PAYMENT:
@@ -35,12 +37,19 @@ void handle_event(event_t current_event)
             break;
         case RECEIVED:
             next_state = current_state->received();
+            break;
+        default:
+            printf("event handling failure\n");
+            break;
     }
 
     if (next_state != NULL)
     {
         current_state = next_state; // Change states
         current_state->entry_to();  // enter the new state
+    }
+    else {
+        printf("next_state is null!\n");
     }
 }
 

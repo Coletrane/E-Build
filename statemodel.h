@@ -17,6 +17,6 @@ extern state_t shipping;
 
 // Declare all of the functions.
 
-void handle_event(event_t current_event);
+void handle_event(event current_event);
 
 #endif

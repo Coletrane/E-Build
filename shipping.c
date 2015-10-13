@@ -2,8 +2,8 @@
 #define shipping_c
 
 #include "shipping.h"
-#include "statemodel.h"
 #include "hardware.h"
+#include "statemodel.h"
 
 state_t shipping = {
     default_event_handler,      // order_received

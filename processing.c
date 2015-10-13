@@ -2,8 +2,8 @@
 #define processing_c
 
 #include "processing.h"
-#include "statemodel.h"
 #include "hardware.h"
+#include "statemodel.h"
 
 state_t processing = {
     default_event_handler,      // order_received

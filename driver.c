@@ -78,6 +78,7 @@ int main()
 	  	}
 	  	//printf("Enter input: ");
 	  	input = getchar();	
- 	} 
+ 	}
+ 	return 0; 
 }
 #endif

@@ -11,7 +11,8 @@ typedef enum {
   MANUFACTURE_COMPLETE,
   LOST_PACKAGE,
   RECEIVED,
-} event_t;
+  NUMBER_OF_EVENTS
+} event;
 
 typedef enum {
   FAIL,

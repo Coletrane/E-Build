@@ -2,6 +2,7 @@
 #define manufacturing_c
 
 #include "manufacturing.h"
+#include "hardware.h"
 #include "statemodel.h"
 
 state_t manufacturing = {

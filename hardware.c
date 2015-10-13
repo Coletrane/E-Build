@@ -11,10 +11,12 @@ static stats_t STATS;
 void resetAttempts()
 {
   attempts = 0;
+  printf("Payment attempts reset\n");
 }
 void incrementAttempts()
 {
   attempts++;
+  printf("Invalid payment attempt #%d\n", attempts);
 }
 int getAttempts()
 {
@@ -32,6 +34,9 @@ void updateStats(stats_t stats)
   		break;
   	case DONE:
   		printf("Status: Done\n");
+  		break;
+  	default:
+  		break;
   }
 }
 void chargeClient()
@@ -74,7 +79,7 @@ void show_state(char in){
 	 printf("MANUFACTURING\n");
 	 break;
 	case 'I':
-	 printf("ACCEPTING\n");
+	 printf("PROCESSING\n");
 	 break;
 	case 'F':
 	 printf("ACCEPTING\n");

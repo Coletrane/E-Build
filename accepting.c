@@ -2,6 +2,7 @@
 #define accepting_c
 
 #include "accepting.h"
+#include "hardware.h"
 #include "statemodel.h"
 
 state_t accepting = {
@@ -19,6 +20,7 @@ state_t accepting = {
 state_t* order_received()
 {
   resetAttempts();
+  return &processing;
 }
 
 #endif
