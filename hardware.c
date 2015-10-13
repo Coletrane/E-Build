@@ -55,7 +55,7 @@ void refund()
 // Entry/Exit functions
 void getPaymentMethod()
 {
- printf("The user should now enter the payment method.\n");
+ printf("The user should enter a valid payment method.\n");
 }
 void dispatchFactoryLines()
 {

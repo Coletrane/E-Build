@@ -1,6 +1,7 @@
 #ifndef processing_c
 #define processing_c
 
+#include <stdio.h>
 #include "processing.h"
 #include "hardware.h"
 #include "statemodel.h"
@@ -19,14 +20,16 @@ state_t processing = {
 
 state_t* invalid_payment()
 {
-  if (getAttempts() < LIMIT)
+  if (getAttempts() >= LIMIT)
   {
-    incrementAttempts();
-    return &processing;
+    printf("Current state is : ACCEPTING\n");
+    return &accepting;
   }
   else
   {
-    return &accepting;
+    incrementAttempts();
+    printf("Current state is: PROCESSING\n");
+    return &processing;
   }
 }
 
@@ -37,7 +40,6 @@ state_t* valid_payment()
 
 void entry_to()
 {
-  resetAttempts();
   getPaymentMethod();
 }
 

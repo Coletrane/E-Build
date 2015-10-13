@@ -8,9 +8,8 @@
 int main()
 {
 	char input = NULL;
-	char previous = 'O';
+	event previous;
 
-	//show_state(input);
 	printf("Enter input: ");
 	input = getchar();
 
@@ -18,67 +17,70 @@ int main()
 	{
 	  	if (input == 'O')
 	  	{
-	  		handle_event(ORDER_RECEIVED);
-	  		show_state(input);
-	  		previous = input;
+	  		if (previous != VALID_PAYMENT || previous != ORDER_RECEIVED || previous != MANUFACTURE_COMPLETE)
+	  		{
+	  			handle_event(ORDER_RECEIVED);
+	  			show_state(input);
+	  			previous = ORDER_RECEIVED;
+	  		}	
 	  	}
 	  	else if (input == 'V')
 	  	{
-	  		if (previous == 'O' || previous == 'I')
+	  		if (previous == ORDER_RECEIVED || previous == INVALID_PAYMENT)
 	  		{
 	  			handle_event(VALID_PAYMENT);
 	  			show_state(input);
-	  			previous = input;
+	  			previous = VALID_PAYMENT;
 	  		} 
 	  	}
 	  	else if (input == 'I')
 	  	{
-	  		if (previous == 'O' || previous == 'I')
+	  		if (previous == ORDER_RECEIVED || previous == INVALID_PAYMENT)
 	  		{
 	  			handle_event(INVALID_PAYMENT);
-	  			show_state(input);
-	  			previous = input;
+	  			previous = INVALID_PAYMENT;
 	  		} 
 	  	}
 	  	else if (input == 'F')
 	  	{
-	  		if (previous == 'V')
+	  		if (previous == VALID_PAYMENT)
 	  		{
 	  			handle_event(MANUFACTURE_FAIL);
 	  			show_state(input);
-	  			previous = input;
+	  			previous = MANUFACTURE_FAIL;
 	  		} 
 	  	}
 	  	else if (input == 'C')
 	  	{
-	  		if (previous == 'V')
+	  		if (previous == VALID_PAYMENT)
 	  		{
 	  			handle_event(MANUFACTURE_COMPLETE);
 	  			show_state(input);
-	  			previous = input;
+	  			previous = MANUFACTURE_COMPLETE;
 	  		} 
 	  	}
 	  	else if (input == 'R')
 	  	{
-	  		if (previous == 'C')
+	  		if (previous == MANUFACTURE_COMPLETE)
 	  		{
 	  			handle_event(RECEIVED);
 	  			show_state(input);
-	  			previous = input;
+	  			previous = RECEIVED;
 	  		} 
 	  	}
 	  	else if (input == 'L')
 	  	{
-	  		if (previous == 'C')
+	  		if (previous == MANUFACTURE_COMPLETE)
 	  		{
 	  			handle_event(LOST_PACKAGE);
 	  			show_state(input);
-	  			previous = input;
+	  			previous = LOST_PACKAGE;
 	  		}
-	  	}
-	  	//printf("Enter input: ");
+	  	} 
 	  	input = getchar();	
+
  	}
+
  	return 0; 
 }
 #endif
