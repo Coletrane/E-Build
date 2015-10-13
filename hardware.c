@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "hardware.h"
 
-static int attempts = 0;
+int attempts = 0;
 static stats_t STATS;
 
 // Transition functions
@@ -23,6 +23,16 @@ int getAttempts()
 void updateStats(stats_t stats)
 {
   STATS = stats;
+  switch (STATS) {
+  	case FAIL:
+  		printf("Status: Fail\n");
+  		break;
+  	case LOST:
+  		printf("Status: Lost\n");
+  		break;
+  	case DONE:
+  		printf("Status: Done\n");
+  }
 }
 void chargeClient()
 {

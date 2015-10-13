@@ -23,10 +23,10 @@ typedef enum {
 void resetAttempts();
 void incrementAttempts();
 int getAttempts();
-void UpdateStats(stats_t stats);
-void ChargeClient();
-void StartWarranty();
-void Refund();
+void updateStats(stats_t stats);
+void chargeClient();
+void startWarranty();
+void refund();
 
 // Entry/Exit functions
 void getPaymentMethod();

@@ -3,14 +3,16 @@
 
 #include "statemodel.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
 	char input = NULL;
 	char previous = 'O';
 
-	show_state(input);
-	scanf("%s", &input);
+	//show_state(input);
+	printf("Enter input: ");
+	input = getchar();
 
 	while (input != 'X')
 	{
@@ -74,7 +76,8 @@ int main()
 	  			previous = input;
 	  		}
 	  	}
-	  	scanf("%s", &input);	
+	  	//printf("Enter input: ");
+	  	input = getchar();	
  	} 
 }
 #endif
