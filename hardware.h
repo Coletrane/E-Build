@@ -1,7 +1,7 @@
 #ifndef hardware_h
 #define hardware_h
 
-#define LIMIT;
+#define LIMIT 3 
 
 typedef enum {
   ORDER_RECEIVED,
@@ -22,6 +22,7 @@ typedef enum {
 // Transition functions
 void resetAttempts();
 void incrementAttempts();
+int getAttempts();
 void UpdateStats(stats_t stats);
 void ChargeClient();
 void StartWarranty();
@@ -34,6 +35,6 @@ void shutDownFactoryLines();
 void getAddress();
 
 // Helper Function
-void showState();
+void show_state(char in);
 
 #endif

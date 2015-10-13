@@ -3,6 +3,7 @@
 
 #include "processing.h"
 #include "statemodel.h"
+#include "hardware.h"
 
 state_t processing = {
     default_event_handler,      // order_received
@@ -16,20 +17,20 @@ state_t processing = {
     default_action              // exit
 };
 
-state_t* invalid_payment();
+state_t* invalid_payment()
 {
-  if (attempts < LIMIT)
+  if (getAttempts() < LIMIT)
   {
     incrementAttempts();
     return &processing;
   }
   else
-    printf("Current state is: Accepting\n");
+  {
     return &accepting;
-
+  }
 }
 
-state_t* valid_payment();
+state_t* valid_payment()
 {
   return &manufacturing;
 }
@@ -37,7 +38,6 @@ state_t* valid_payment();
 void entry_to()
 {
   resetAttempts();
-  printf("Current state is: Processing\n");
   getPaymentMethod();
 }
 

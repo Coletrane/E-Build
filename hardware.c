@@ -16,7 +16,11 @@ void incrementAttempts()
 {
   attempts++;
 }
-void updateStats(stats_t stats);
+int getAttempts()
+{
+	return attempts;
+}
+void updateStats(stats_t stats)
 {
   STATS = stats;
 }
@@ -50,7 +54,7 @@ void getAddress()
 {
  printf("The user should now enter the order address.\n");
 }
-void showState(char * in){
+void show_state(char in){
  printf("Current state is: ");
  switch (in){
   	case 'O': 

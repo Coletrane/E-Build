@@ -14,7 +14,7 @@ state_t manufacturing = {
     default_event_handler,		// lost_package
     entry_to,                   // entry
     exit_from                   // exit
-}
+};
 
 state_t* manufacture_fail()
 {

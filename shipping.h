@@ -3,8 +3,8 @@
 
 #include "state.h"
 
-state_t*  lost_package();
-state_t*  received();
-void      entry_to();
+static state_t*  lost_package();
+static state_t*  received();
+static void      entry_to();
 
 #endif
