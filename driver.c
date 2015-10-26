@@ -2,29 +2,35 @@
 #define driver_c
 
 #include "statemodel.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 int main()
 {
 	char input = NULL;
-	event previous;
+	event previous = RECEIVED;
+    int init = 1;
 
-	printf("Enter input: ");
+	printf("Current State is: ACCEPTING\n");
 	input = getchar();
 
 	while (input != 'X')
 	{
-	  	if (input == 'O')
+        if (init == 1 && input == 'O')
+        {
+            init--;              
+        }
+	  	if (input == 'O' && init == 0)
 	  	{
-	  		if (previous != VALID_PAYMENT || previous != ORDER_RECEIVED || previous != MANUFACTURE_COMPLETE)
+	  		if (previous != VALID_PAYMENT && previous != ORDER_RECEIVED && previous != MANUFACTURE_COMPLETE)   
 	  		{
 	  			handle_event(ORDER_RECEIVED);
 	  			show_state(input);
 	  			previous = ORDER_RECEIVED;
 	  		}	
 	  	}
-	  	else if (input == 'V')
+	  	else if (input == 'V' && init == 0)
 	  	{
 	  		if (previous == ORDER_RECEIVED || previous == INVALID_PAYMENT)
 	  		{
@@ -33,7 +39,7 @@ int main()
 	  			previous = VALID_PAYMENT;
 	  		} 
 	  	}
-	  	else if (input == 'I')
+	  	else if (input == 'I' && init == 0)
 	  	{
 	  		if (previous == ORDER_RECEIVED || previous == INVALID_PAYMENT)
 	  		{
@@ -41,7 +47,7 @@ int main()
 	  			previous = INVALID_PAYMENT;
 	  		} 
 	  	}
-	  	else if (input == 'F')
+	  	else if (input == 'F' && init == 0)
 	  	{
 	  		if (previous == VALID_PAYMENT)
 	  		{
@@ -50,7 +56,7 @@ int main()
 	  			previous = MANUFACTURE_FAIL;
 	  		} 
 	  	}
-	  	else if (input == 'C')
+	  	else if (input == 'C' && init == 0)
 	  	{
 	  		if (previous == VALID_PAYMENT)
 	  		{
@@ -59,7 +65,7 @@ int main()
 	  			previous = MANUFACTURE_COMPLETE;
 	  		} 
 	  	}
-	  	else if (input == 'R')
+	  	else if (input == 'R' && init == 0)
 	  	{
 	  		if (previous == MANUFACTURE_COMPLETE)
 	  		{
@@ -68,7 +74,7 @@ int main()
 	  			previous = RECEIVED;
 	  		} 
 	  	}
-	  	else if (input == 'L')
+	  	else if (input == 'L' && init == 0)
 	  	{
 	  		if (previous == MANUFACTURE_COMPLETE)
 	  		{
@@ -78,7 +84,6 @@ int main()
 	  		}
 	  	} 
 	  	input = getchar();	
-
  	}
 
  	return 0; 
