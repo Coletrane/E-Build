@@ -106,6 +106,9 @@ void dispatchFactoryLines()
     {
         pthread_join(thread[i], NULL);
     }
+    
+    //Confirm end of manufacturing
+    printf("All parts manufactured.\n");
 }
 void shutDownFactoryLines()
 {
@@ -144,6 +147,7 @@ void show_state(char in){
  }
 }
 
+// Thread function
 void *manufacturing_line(void *ptr)
 {
     thread_params_t *param = ptr;
@@ -152,46 +156,39 @@ void *manufacturing_line(void *ptr)
             , param->tid, param->capacity, param->duration);
 
     while (order_size > 0)
-    {
-        // 1 to n - 1 times
+    { 
+        // Iterations 1 to n-1
         if (order_size > param->capacity)
         {
-            // Subtract the amount of parts to be made
+            // Lock mutex to update order_size
             pthread_mutex_lock(&mutex);
             order_size -= param->capacity;
             printf("Order size: %d\n", order_size);
             pthread_mutex_unlock(&mutex);
             
-            // Update thread params
-            if (order_size != 0)
-            {
-                param->iterations++;
-                param->num_items += param->capacity;
-                sleep(param->duration);
-                printf("Factory line %d iteration complete. All time iterations: %d All time parts made: %d\n"
-                       ,param->tid, param->iterations, param->num_items); 
-            }
+            // Update lines' parameters
+            param->iterations++;
+            param->num_items += param->capacity;
+            sleep(param->duration);
+            printf("Factory line %d iteration complete. All time iterations: %d All time parts made: %d\n"
+                   ,param->tid, param->iterations, param->num_items); 
         }
-        // last time
+        // Last iteration
         else 
         {
-            // Subtract the amount of parts to be made
+            // Lock mutex to update order_size
+            param->num_items += order_size; 
             pthread_mutex_lock(&mutex);
             order_size = 0;
             printf("Order size: %d\n", order_size);
             pthread_mutex_unlock(&mutex);
-                
-            // Update thread params
-            if (order_size != 0)
-            {
-                param->iterations++;
-                param->num_items += param->capacity;
-                sleep(param->duration);
-                printf("Factory line %d iteration complete. All time iterations: %d All time parts made: %d\n"
-                       ,param->tid, param->iterations, param->num_items); 
-            }
-        }
+            
+            // Update lines' parameters
+            param->iterations++;
+            sleep(param->duration);
+            printf("Factory line %d iteration complete. All time iterations: %d All time parts made: %d\n"
+                   ,param->tid, param->iterations, param->num_items); 
+        }       
     }
-    
 }
 #endif
