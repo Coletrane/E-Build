@@ -109,6 +109,9 @@ void dispatchFactoryLines()
     
     //Confirm end of manufacturing
     printf("All parts manufactured.\n");
+
+    //Destroy mutex
+    pthread_mutex_destroy(&mutex);
 }
 void shutDownFactoryLines()
 {
