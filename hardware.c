@@ -17,7 +17,7 @@ pthread_mutex_t mutex;          // Mutex for manufacturing_line
 
 void *manufacturing_line(void *);
 
-// Order functions
+// Order function: generates random seed and random order size
 void order_init()
 {
 	if (ord_count == 0)

@@ -30,7 +30,7 @@ typedef enum {
   DONE
 } stats_t;
 
-// Order functions
+// Order function
 void order_init();
 
 // Transition functions
