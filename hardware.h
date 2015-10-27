@@ -9,7 +9,8 @@ typedef struct {
 	int capacity;
 	int duration;
     int tid;
-    pthread_t *thread;
+    int iterations;
+    int num_items;
 } thread_params_t;
 
 typedef enum {

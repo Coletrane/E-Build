@@ -5,15 +5,17 @@
 #include "hardware.h"
 #include "manufacturing.h"
 
-#define THREADS 5      //5 Total manufacturing lines
+#define THREADS 5               // 5 Total manufacturing lines
 
-int attempts = 0;
-static stats_t STATS;
+int attempts = 0;               // Payment attempts
+static stats_t STATS;           // Order status
 
-int ord_count = 0;
-int order_size = 0;
+int ord_count = 0;              // Sentinel for calling srandom only once
+int order_size = 0;             // [1000-2000]
 
-void * manufacturing_line(thread_params_t *param);
+pthread_mutex_t mutex;          // Mutex for manufacturing_line
+
+void *manufacturing_line(void *);
 
 // Order functions
 void order_init()
@@ -78,18 +80,31 @@ void getPaymentMethod()
 }
 void dispatchFactoryLines()
 {
-    order_t ord;
-    order_init(&ord);
-    
-    thread_params_t thrd_param[5];
+    // Pick a random order size [1000-2000]
+    order_init();
+    printf("Initial order size: %d\n", order_size);
 
-    int i;
-    for (i = 0; i < THREADS; i++)
-    {
+    pthread_mutex_init(&mutex, NULL);    
         
+    thread_params_t thrd_param[6];      //Will not use thrd_param[0] 
+    pthread_t thread[6];
+    
+    // Init thread params and create the threads
+    int i;
+    for (i = 1; i < THREADS + 1; i++)
+    {
+        thrd_param[i].iterations = 0;
+        thrd_param[i].num_items = 0;
+        thrd_param[i].capacity = (random() % 41) + 10;
+	    thrd_param[i].duration = (random() % 5) + 1;
         thrd_param[i].tid = i;
-        printf("Thread param[%d] %d\n", i, thrd_param->tid);
-        pthread_create(thrd_param[i].thread, NULL, manufacturing_line, &thrd_param[i]);  
+        pthread_create(&thread[i], NULL, manufacturing_line, &thrd_param[i]);  
+    }
+    
+    // Wait for the threads to finish
+    for (i = 1; i < THREADS + 1; i++)
+    {
+        pthread_join(thread[i], NULL);
     }
 }
 void shutDownFactoryLines()
@@ -129,11 +144,54 @@ void show_state(char in){
  }
 }
 
-void * manufacturing_line(thread_params_t *param)
+void *manufacturing_line(void *ptr)
 {
-    //printf("Factory line %d has been dispatched.", param->tid);
-    //param->capacity = (random() % 41) + 10;
-	//param->duration = (random() % 5) + 1;
-   // printf(" Capacity: %d, Duration: %d\n", param->capacity, param->duration);
+    thread_params_t *param = ptr;
+    
+    printf("Factory line %d has been dispatched with capacity: %d and duration: %d\n"
+            , param->tid, param->capacity, param->duration);
+
+    while (order_size > 0)
+    {
+        // 1 to n - 1 times
+        if (order_size > param->capacity)
+        {
+            // Subtract the amount of parts to be made
+            pthread_mutex_lock(&mutex);
+            order_size -= param->capacity;
+            printf("Order size: %d\n", order_size);
+            pthread_mutex_unlock(&mutex);
+            
+            // Update thread params
+            if (order_size != 0)
+            {
+                param->iterations++;
+                param->num_items += param->capacity;
+                sleep(param->duration);
+                printf("Factory line %d iteration complete. All time iterations: %d All time parts made: %d\n"
+                       ,param->tid, param->iterations, param->num_items); 
+            }
+        }
+        // last time
+        else 
+        {
+            // Subtract the amount of parts to be made
+            pthread_mutex_lock(&mutex);
+            order_size = 0;
+            printf("Order size: %d\n", order_size);
+            pthread_mutex_unlock(&mutex);
+                
+            // Update thread params
+            if (order_size != 0)
+            {
+                param->iterations++;
+                param->num_items += param->capacity;
+                sleep(param->duration);
+                printf("Factory line %d iteration complete. All time iterations: %d All time parts made: %d\n"
+                       ,param->tid, param->iterations, param->num_items); 
+            }
+        }
+    }
+    
 }
 #endif
