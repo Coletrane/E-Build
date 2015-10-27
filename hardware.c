@@ -3,20 +3,38 @@
 
 #include <stdio.h>
 #include "hardware.h"
+#include "manufacturing.h"
+
+#define THREADS 5      //5 Total manufacturing lines
 
 int attempts = 0;
 static stats_t STATS;
 
+int ord_count = 0;
+int order_size = 0;
+void *thread(order_t *ord);
+
+// Order functions
+void order_init()
+{
+	if (ord_count == 0)
+	{
+		srandom(time(NULL));
+		ord_count++;
+	}
+	order_size = (random() % 1001) + 1000;
+}
+
 // Transition functions
 void resetAttempts()
 {
-  attempts = 0;
-  printf("Payment attempts reset\n");
+    attempts = 0;
+    printf("Payment attempts reset\n");
 }
 void incrementAttempts()
 {
-  attempts++;
-  printf("Invalid payment attempt #%d\n", attempts);
+    attempts++;
+    printf("Invalid payment attempt #%d\n", attempts);
 }
 int getAttempts()
 {
@@ -41,33 +59,40 @@ void updateStats(stats_t stats)
 }
 void chargeClient()
 {
- printf("The client's account has now been charged.\n"); 
+    printf("The client's account has now been charged.\n"); 
 }
 void startWarranty()
 {
- printf("The warranty on the product is now active.\n");
+    printf("The warranty on the product is now active.\n");
 }
 void refund()
 {
- printf("The client's account has been refunded.\n");
+    printf("The client's account has been refunded.\n");
 }
 
 // Entry/Exit functions
 void getPaymentMethod()
 {
- printf("The user should enter a valid payment method.\n");
+    printf("The user should enter a valid payment method.\n");
 }
 void dispatchFactoryLines()
 {
- printf("Factory line has been dispatched.\n");
+    order_t ord;
+    order_init(&ord);
+    int i;
+    for (i = 0; i < THREADS; i++)
+    {
+        pthread_create(
+    }
+    //printf("Factory line has been dispatched.\n");
 }
 void shutDownFactoryLines()
 {
- printf("Factory line has been shut down.\n");
+    printf("Factory line has been shut down.\n");
 }
 void getAddress()
 {
- printf("The user should now enter the order address.\n");
+    printf("The user should now enter the order address.\n");
 }
 void show_state(char in){
  printf("Current state is: ");
@@ -96,5 +121,11 @@ void show_state(char in){
 	default:
 	 break;
  }
+}
+
+void *thread(thread_params_t *param)
+{
+    param->capacity = (random() % 41) + 10;
+	param->duration = (random() % 5) + 1;
 }
 #endif
