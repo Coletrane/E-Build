@@ -1,12 +1,14 @@
 #ifndef hardware_h
 #define hardware_h
 
-#define LIMIT 3 
+#include <pthread.h>
+
+#define LIMIT 3
 
 typedef struct {
 	int capacity;
 	int duration;
-    pthread_t tid;
+  pthread_t tid;
 } thread_params_t;
 
 typedef enum {
@@ -27,8 +29,7 @@ typedef enum {
 } stats_t;
 
 // Order functions
-void order_init(order_t *ord);
-void order_process(order_t *ord);
+void order_init();
 
 // Transition functions
 void resetAttempts();

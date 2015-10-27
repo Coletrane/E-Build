@@ -12,7 +12,8 @@ static stats_t STATS;
 
 int ord_count = 0;
 int order_size = 0;
-void *thread(order_t *ord);
+
+void *thread(thread_params_t *param);
 
 // Order functions
 void order_init()
@@ -59,7 +60,7 @@ void updateStats(stats_t stats)
 }
 void chargeClient()
 {
-    printf("The client's account has now been charged.\n"); 
+    printf("The client's account has now been charged.\n");
 }
 void startWarranty()
 {
@@ -82,7 +83,7 @@ void dispatchFactoryLines()
     int i;
     for (i = 0; i < THREADS; i++)
     {
-        pthread_create(
+
     }
     //printf("Factory line has been dispatched.\n");
 }
@@ -97,7 +98,7 @@ void getAddress()
 void show_state(char in){
  printf("Current state is: ");
  switch (in){
-  	case 'O': 
+  	case 'O':
 	  printf("PROCESSING\n");
 	  break;
 	case 'V':
@@ -126,6 +127,6 @@ void show_state(char in){
 void *thread(thread_params_t *param)
 {
     param->capacity = (random() % 41) + 10;
-	param->duration = (random() % 5) + 1;
+		param->duration = (random() % 5) + 1;
 }
 #endif
