@@ -13,7 +13,7 @@ static stats_t STATS;
 int ord_count = 0;
 int order_size = 0;
 
-void *thread(thread_params_t *param);
+void * manufacturing_line(thread_params_t *param);
 
 // Order functions
 void order_init()
@@ -80,12 +80,17 @@ void dispatchFactoryLines()
 {
     order_t ord;
     order_init(&ord);
+    
+    thread_params_t thrd_param[5];
+
     int i;
     for (i = 0; i < THREADS; i++)
     {
-
+        
+        thrd_param[i].tid = i;
+        printf("Thread param[%d] %d\n", i, thrd_param->tid);
+        pthread_create(thrd_param[i].thread, NULL, manufacturing_line, &thrd_param[i]);  
     }
-    //printf("Factory line has been dispatched.\n");
 }
 void shutDownFactoryLines()
 {
@@ -124,9 +129,11 @@ void show_state(char in){
  }
 }
 
-void *thread(thread_params_t *param)
+void * manufacturing_line(thread_params_t *param)
 {
-    param->capacity = (random() % 41) + 10;
-		param->duration = (random() % 5) + 1;
+    //printf("Factory line %d has been dispatched.", param->tid);
+    //param->capacity = (random() % 41) + 10;
+	//param->duration = (random() % 5) + 1;
+   // printf(" Capacity: %d, Duration: %d\n", param->capacity, param->duration);
 }
 #endif

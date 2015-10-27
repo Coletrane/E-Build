@@ -1,5 +1,5 @@
 driver: driver.o statemodel.o hardware.o state.o accepting.o manufacturing.o processing.o shipping.o
-	gcc driver.o statemodel.o hardware.o state.o accepting.o manufacturing.o processing.o shipping.o -o driver
+	gcc driver.o statemodel.o hardware.o state.o accepting.o manufacturing.o processing.o shipping.o -lpthread -o driver
 
 driver.o: driver.c hardware.h statemodel.h
 	gcc -c driver.c
