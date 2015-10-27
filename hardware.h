@@ -3,6 +3,12 @@
 
 #define LIMIT 3 
 
+typedef struct {
+	int capacity;
+	int duration;
+    pthread_t tid;
+} thread_params_t;
+
 typedef enum {
   ORDER_RECEIVED,
   INVALID_PAYMENT,
@@ -19,6 +25,10 @@ typedef enum {
   LOST,
   DONE
 } stats_t;
+
+// Order functions
+void order_init(order_t *ord);
+void order_process(order_t *ord);
 
 // Transition functions
 void resetAttempts();
