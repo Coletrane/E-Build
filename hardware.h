@@ -8,7 +8,9 @@
 typedef struct {
 	int capacity;
 	int duration;
-  pthread_t tid;
+    int tid;
+    int iterations;
+    int num_items;
 } thread_params_t;
 
 typedef enum {
@@ -28,7 +30,7 @@ typedef enum {
   DONE
 } stats_t;
 
-// Order functions
+// Order function
 void order_init();
 
 // Transition functions

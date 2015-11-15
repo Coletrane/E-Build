@@ -1,0 +1,54 @@
+/* Create the Supervisor process */
+superPID = fork();
+if ( superpID == 0) 
+{
+    snprintf(command, 40, "./supervisor %d", NUMCLIENTS );
+    if( execlp("gnome-terminal", "SuperVterm",
+    "-x", "bin/bash", "-c", command, NULL) < 0)
+    {
+        perror("execlp failed");
+        exit(-1);
+    }
+}
+/* Craete the client processes */
+for (i = 0; i< NUMCLIENTS; i++)
+{
+    clientPID[i] = Fork();      // Wrapper function 
+    if (clientPID[i] == 0)      // this is a client/child process
+    {
+        snprintf(command, 40, "./factor %d %d %d", i, 100+20*i, 2+i);
+    if( execlp("gnome-terminal", "factoryTerm",
+    "-x", "bin/bash", "-c", command, NULL) < 0)
+    {
+        perror("execlp failed");
+        exit(-1);
+    }
+}
+// Wait for all processes to start
+sleep(5);
+
+
+// Fork() wrapper
+pid_t Fork(void)
+{
+    pid_t n;
+    n = fork();
+    if (n < 0)
+    {
+        perror("Fork failed");
+        exit(-1);
+    }
+    return n;
+}
+
+int main(int argc, char *argv[])
+{
+    int shmid, shmflg;
+    key_t shmkey;
+    pid_t superID;
+    shared_data *p;
+    msgBuf msg1, msg2;
+    key_t msgQueKey;
+    int queId, msgStatus;
+    int factLineID, myCapacity, my Duration;
+
