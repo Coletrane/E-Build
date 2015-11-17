@@ -26,6 +26,8 @@ typedef struct {
     int finished;
     int order_size;
     sem_t prod_running;
+    sem_t print_report;
+    sem_t done;
 } shared_data;
 
 state_t*  manufacture_fail();

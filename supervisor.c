@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
 		exit(-2);
 	} 
 
-	sem_init(&shared->prod_running, 1, 1);
+	sem_init(&shared->prod_running, 1, 0);
 	
 	while (linesActive > 0 ){
 		printf ("\nWaiting to receive message ...\n" );
@@ -64,7 +64,9 @@ int main(int argc, char * argv[])
 		}
 	}
 	
-
+	sem_post(&shared->prod_running);
+	
+	
 	/* 
 	Inform parent that lines are done
 	Wait for permission to print production aggregates
