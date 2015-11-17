@@ -97,6 +97,8 @@ int main(int argc, char * argv[])
 	*/
 	shmdt(shared);
 	shmctl(shmid, IPC_RMID, NULL);
-	
+
+	msgctl(queueID, IPC_RMID, NULL);
+
 	exit(0);
 }
