@@ -1,4 +1,5 @@
 #include "factory_lines.h"
+#include "message.h"
 
 // Wrapper for shmget(3)
 int Shmget(key_t key, size_t size, int shmflg, int factory_id)
@@ -37,19 +38,25 @@ int main(int argc, char *argv[])
     int shmflg;
     int shmid; 
     shared_data *shared;
+    message_buffer snd_msg, rcv_msg;
 
     // Assign parameters from command line input 
     if (argc > 0)
     {
-        param->factory_id = strtol(argv[1], &p, 10);
-        //param->capacity = strtol(argv[2], &p, 10);
-        //param->duration = strtol(argv[3], &p, 10);
+        param->factory_id = atoi(argv[0]);
+        param->capacity = atoi(argv[1]);
+        param->duration = atoi(argv[2]);
+        printf("Factory line: %d created with capacity: %d and duration: %d\n",
+        		param->factory_id, param->capacity, param->duration);
     }
     else
     {
         printf("\nPlease enter 3 integer arguments\n");
         exit(-1);
     }
+    param->iterations = 0;
+    param->num_items = 0;
+    param->first_line_closed = 0;
 
     // Create shared memory 
     shmkey = SHM_KEY;
@@ -58,41 +65,89 @@ int main(int argc, char *argv[])
 
     // Attach shared memory
     shared = (shared_data *) Shmat(shmid, NULL, 0);
-    
-    // TEMPORARY SEMAPHORE INIT
-    sem_init(&shared->mutex, 1, 0);
 
+    // Create message queue
+    int queueID, msgStatus, result;
+    message_buffer msg;
+    key_t msgQueueKey;
+    msgQueueKey = BASE_MAILBOX_NAME;
+    queueID = msgget(msgQueueKey, IPC_EXCL | 0600);
+
+    if (queueID < 0) {
+		printf("Failed to create mailbox %X. Error code=%d\n", msgQueueKey , errno ) ;
+		exit(-2);
+	}
+    else
+    {
+    	printf("Factory line: %d mailbox created successfully with id: %d\n",
+    			param->factory_id, queueID);
+    }
     // Loop until order is complete
     while (shared->order_size > 0)
     {
         // Iterations 1 to n-1
         if (shared->order_size > param->capacity)
         {
-            // Lock mutex to update order_size
-            sem_wait(&shared->mutex);
+            // Lock semaphore to update order_size
+            sem_wait(&shared->fact_using);
+            printf("Factory line : %d order size: %d\n",
+            		param->factory_id, shared->order_size);
             shared->order_size -= param->capacity;
-            // send message about order_size
-            sem_post(&shared->mutex);
+            printf("Factory line : %d order size: %d\n",
+            		param->factory_id, shared->order_size);
+            sem_post(&shared->fact_using);
 
+            // Update params
             param->iterations++;
             param->num_items += param->capacity;
-            sleep(param->duration);
-            // Send message iterations, durations
+            printf("Factory line : %d Iterations: %d Parts Made: %d\nMaking parts...\n",
+            		param->factory_id, param->iterations, param->num_items);
+            usleep(param->duration * 1000);
+
+            // Send message of params to supervisor
+            snd_msg.mtype = 1;
+            snd_msg.info = *param;
+            printf("Sending message to supervisor with code: %d\n\n", snd_msg.mtype);
+            msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
         }
         // Last iteration
         else
         {
+
+            // Lock semaphore to update order_size
+            sem_wait(&shared->fact_using);
             param->num_items += shared->order_size;
-            // Lock mutex to update order_size
-            sem_wait(&shared->mutex);
+            printf("Factory line : %d order size: %d\n",
+            		param->factory_id, shared->order_size);
             shared->order_size = 0;
+
             // Send message about order_size
-            sem_post(&shared->mutex);
-            
+            sem_post(&shared->fact_using);
+            printf("Factory line : %d order size: %d\n",
+            		param->factory_id, shared->order_size);
+
             // Update lines' parameters
             param->iterations++;
-            sleep(param->duration);
-            // Send message iterations, durations
+            printf("Factory line : %d Iterations: %d Parts Made: %d\nMaking parts...\n",
+            		param->factory_id, param->iterations, param->num_items);
+            usleep(param->duration * 1000);
+
+            // Send message of params to supervisor
+            snd_msg.mtype = 2;
+            snd_msg.info = *param;
+            printf("Factory line: %d sending message to supervisor with code: %d\n\n",
+            		param->factory_id,snd_msg.mtype);
+            msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
+            param->first_line_closed = 1;
+        }
+
+        // Terminate remaining lines
+        if (param->first_line_closed != 1)
+        {
+        	snd_msg.mtype = 2;
+        	snd_msg.info = *param;
+            printf("Sending message to supervisor with code: %d\n\n", snd_msg.mtype);
+            msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
         }
     }
     
