@@ -9,8 +9,7 @@ typedef struct {
 	line_params info;
 } message_buffer ;
 
-#define MSG_INFO_SIZE ( sizeof(message_buffer) - sizeof(long) )
-
-#define BASE_MAILBOX_NAME 0x20
+#define MSG_INFO_SIZE sizeof(message_buffer)
+#define BASE_MAILBOX_NAME 1100
 
 void printMsg( message_buffer *m ) ;
