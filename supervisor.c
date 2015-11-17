@@ -1,5 +1,6 @@
 
 #include "supervisor.h"
+#include "message.h"
 
 int main(int argc, char * argv[])
 {
@@ -20,14 +21,29 @@ int main(int argc, char * argv[])
 
     // Attach shared memory
     shared_data *shared = (shared_data *) shmat(shmid, NULL, 0);
-/**
-	if (superID == 0) {
-		if ( excelp("gnome-terminal", "supervisor", "-x", 
-					"/bin/bash", "-c", "./supervisor 5", NULL) < 0) {
-			perror("excelp Supervisor failed.");
-			exit(-1);
-		}
-		int linesActive = 5;
+
+    
+
+    int queueID, msgStatus, result;
+    message_buffer msg;
+    key_t msgQueueKey;
+    msgQueueKey = BASE_MAILBOX_NAME;
+    queueID = msgget(msgQueueKey, IPC_CREAT | 0600);
+
+    if (queueID < 0) {
+		printf("Failed to create mailbox %X. Error code=%d\n", msgQueKey , errno ) ;
+		exit(-2);
+	} 
+
+	printf ("\nWaiting to receive message ...\n" );
+	msgStatus = msgrcv(queueID, &msg, MSG_INFO_SIZE, 1, 0);
+	
+	if ( msgStatus < 0 )
+	{
+		printf("Failed to receive message from User process on queuID %d. Error code=%d\n", queID , errno ) ;
+		exit(-2) ;
+	}
+	if ()
 		/* 
 		Recieve message from mailbox
 		if (ProdMsg)

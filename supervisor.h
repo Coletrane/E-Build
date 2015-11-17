@@ -11,6 +11,11 @@
 #include <semaphore.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/ipc.h>
+#include <sys/types.h>
+#include <sys/msg.h>
 
 #define NUM_LINES 5
 #define SHM_KEY 10002
