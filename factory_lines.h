@@ -9,6 +9,7 @@ typedef struct {
     int duration;
     int iterations;
     int num_items;
+    int first_line_closed;
 } line_params;
 
 #endif
