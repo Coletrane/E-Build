@@ -1,17 +1,12 @@
 #include <sys/types.h>
 #include <string.h>
+#include "factory_lines.h"
 
 #define MAXNAMELEN 20
 
 typedef struct {
 	long mtype ; /* 1: Production , 2: Termination */
-	struct {
-		pid_t sender  ; 
-		int factory_ID;
-		int capacity  ; 
-		int duration  ; 
-		int result    ; 
-	} info ;
+	line_params info;
 } message_buffer ;
 
 #define MSG_INFO_SIZE ( sizeof(message_buffer) - sizeof(long) )

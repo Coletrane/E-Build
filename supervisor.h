@@ -22,10 +22,10 @@
 #define SHM_SIZE sizeof(shared_data)
 
 typedef struct {
-    int sarted;
+    int started;
     int finished;
     int order_size;
-    sem_t mutex;
+    sem_t prod_running;
 } shared_data;
 
 state_t*  manufacture_fail();

@@ -22,43 +22,56 @@ int main(int argc, char * argv[])
     // Attach shared memory
     shared_data *shared = (shared_data *) shmat(shmid, NULL, 0);
 
-    
 
-    int queueID, msgStatus, result;
+
+    int queueID;
+    int msgStatus;
+    int linesActive = NUM_LINES;
+    int iterations = 0;
+    int items_built = 0;
+
     message_buffer msg;
     key_t msgQueueKey;
     msgQueueKey = BASE_MAILBOX_NAME;
     queueID = msgget(msgQueueKey, IPC_CREAT | 0600);
 
     if (queueID < 0) {
-		printf("Failed to create mailbox %X. Error code=%d\n", msgQueKey , errno ) ;
+		sprintf("Failed to create mailbox %X. Error code=%d\n", msgQueKey , errno ) ;
 		exit(-2);
 	} 
 
-	printf ("\nWaiting to receive message ...\n" );
-	msgStatus = msgrcv(queueID, &msg, MSG_INFO_SIZE, 1, 0);
+	sem_init(&shared->prod_running, 1, 1);
 	
-	if ( msgStatus < 0 )
-	{
-		printf("Failed to receive message from User process on queuID %d. Error code=%d\n", queID , errno ) ;
-		exit(-2) ;
+	while (linesActive > 0 ){
+		printf ("\nWaiting to receive message ...\n" );
+		msgStatus = msgrcv(queueID, &msg, MSG_INFO_SIZE, 1, 0);
+	
+		if ( msgStatus < 0 )
+		{
+			sprintf("Failed to receive message from User process on queuID %d. Error code=%d\n", queID , errno ) ;
+			exit(-2) ;
+		}
+		if (mtype == 1) { //message is production
+			iterations += msg.info.iterations;
+			items_built += msg.info.num_items;
+
+		}
+		else if (mtype == 2) { //message is termination
+			linesActive--;
+		}
+		else {
+			sprintf("Unsupported Message received, will be discarded.\n");
+		}
 	}
-	if ()
-		/* 
-		Recieve message from mailbox
-		if (ProdMsg)
-			updateProductionAggregates(num-items-built, num-iterations)
-		elif (TerminateMsg)
-			LinesActive--
-		else
-			discard(UnsupportedMsg)
+	
 
-		Inform parent that lines are done
-		Wait for permission to print production aggregates
-		Print prod agg
-		Inform that supervisor is done
-		Exit
+	/* 
+	Inform parent that lines are done
+	Wait for permission to print production aggregates
+	Print prod agg
+	Inform that supervisor is done
+	Exit
+	*/
 
-	}*/
 	return 0;
 }
