@@ -24,7 +24,7 @@ void order_init()
 		srandom(time(NULL));
 		ord_count++;
 	}
-	order_size = rand() % 1001 + 1000;
+	order_size = random() % 1001 + 1000;
 }
 
 // Transition functions
@@ -122,10 +122,10 @@ void dispatchFactoryLines()
 	int i;
 	for (i = 1; i < NUM_LINES + 1; i++)
 	{
-		int capi = rand() % 41 + 10;
+		int capi = random() % 41 + 10;
 		sprintf(cap, "%d", capi);
 
-		int duri = rand() % 401 + 100;
+		int duri = random() % 401 + 100;
 		sprintf(dur, "%d", duri);
 
 		pid_t pid = fork();

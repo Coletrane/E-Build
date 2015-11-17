@@ -1,4 +1,3 @@
-
 #include "supervisor.h"
 #include "message.h"
 
@@ -48,7 +47,7 @@ int main(int argc, char * argv[])
 	while (linesActive > 0 ){
 		printf ("\nSupervisor: waiting to receive message. Lines active: %d\n",
 				linesActive);
-		msgStatus = msgrcv(queueID, &rcv_msg, MSG_INFO_SIZE, 1, 0);
+		msgStatus = msgrcv(queueID, &rcv_msg, MSG_INFO_SIZE, 0, 0);
 	
 		if ( msgStatus < 0 )
 		{
