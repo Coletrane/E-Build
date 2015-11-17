@@ -4,7 +4,7 @@
 
 int main(int argc, char * argv[])
 {
-
+	int num_lines = atoi(argv[0]);
 	// Create shared memory
     key_t shmkey = SHM_KEY;
     int shmflg = IPC_CREAT | S_IRUSR | S_IWUSR;
@@ -22,13 +22,9 @@ int main(int argc, char * argv[])
     // Attach shared memory
     shared_data *shared = (shared_data *) shmat(shmid, NULL, 0);
 
-
-
     int queueID;
     int msgStatus;
     int linesActive = NUM_LINES;
-    int iterations = 0;
-    int items_built = 0;
 
     message_buffer msg;
     key_t msgQueueKey;
@@ -40,7 +36,7 @@ int main(int argc, char * argv[])
 		exit(-2);
 	} 
 
-	sem_init(&shared->prod_running, 1, 0);
+	sem_post(&shared->message_ready);	
 	
 	while (linesActive > 0 ){
 		printf ("\nWaiting to receive message ...\n" );
@@ -48,25 +44,34 @@ int main(int argc, char * argv[])
 	
 		if ( msgStatus < 0 )
 		{
-			sprintf("Failed to receive message from User process on queuID %d. Error code=%d\n", queID , errno ) ;
+			printf("Failed to receive message from User process on queueID %d. Error code=%d\n", queueID , errno ) ;
 			exit(-2) ;
 		}
-		if (mtype == 1) { //message is production
-			iterations += msg.info.iterations;
-			items_built += msg.info.num_items;
+		if (msg.mtype == 1) { //message is production
+			shared->iterations[msg.info.factory_id - 1] += msg.info.iterations;
+			shared->items_built[msg.info.factory_id - 1] += msg.info.num_items;
 
 		}
-		else if (mtype == 2) { //message is termination
+		else if (msg.mtype == 2) { //message is termination
 			linesActive--;
 		}
 		else {
-			sprintf("Unsupported Message received, will be discarded.\n");
+			printf("Unsupported Message received, will be discarded.\n");
 		}
 	}
 	
 	sem_post(&shared->prod_running);
-	
-	
+
+	sem_wait(&shared->print_report);
+
+	int i = 0;
+	for (i = 0, i < 5, i++){
+		printf("Iterations performed by line %d: %d\n", i+1, shared->iterations[i]);
+		printf("Items built by line %d: %d\n", i+1, shared->iterations[i]);
+	}
+
+	sem_post(&shared->done);
+
 	/* 
 	Inform parent that lines are done
 	Wait for permission to print production aggregates

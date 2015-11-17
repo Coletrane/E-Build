@@ -22,11 +22,12 @@
 #define SHM_SIZE sizeof(shared_data)
 
 typedef struct {
-    int started;
-    int finished;
+    int iterations[NUM_LINES] = {0, 0, 0, 0, 0};
+    int items_built[NUM_LINES] = {0, 0, 0, 0, 0};
     int order_size;
+    sem_t message_ready;
     sem_t prod_running;
-    sem_t print_report;
+    sem_t print_report; //init in Close
     sem_t done;
 } shared_data;
 
