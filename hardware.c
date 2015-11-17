@@ -12,10 +12,8 @@
 int attempts = 0;               // Payment attempts
 static stats_t STATS;           // Order status
 
+int order_size = 0;				// Global since initialization is in another function
 int ord_count = 0;              // Sentinel for calling srandom only once
-int order_size = 0;             // [1000-2000]
-
-pthread_mutex_t mutex;          // Mutex for manufacturing_line
 
 
 // Order function: generates random seed and random order size
@@ -26,7 +24,7 @@ void order_init()
 		srandom(time(NULL));
 		ord_count++;
 	}
-	order_size = (random() % 1001) + 1000;
+	order_size = rand() % 1001 + 1000;
 }
 
 // Transition functions
@@ -83,7 +81,6 @@ void dispatchFactoryLines()
 {
     // Pick a random order size [1000-2000]
     order_init();
-    printf("Initial order size: %d\n", order_size);
 
     // Create shared memory
     key_t shmkey = SHM_KEY;
@@ -92,32 +89,66 @@ void dispatchFactoryLines()
 
     // Attach shared memory
     shared_data *shared = (shared_data *) shmat(shmid, NULL, 0);
-    
-    // fork processes
+
+    // Initialize semaphores
+    sem_init(&shared->done, 1, 0);
+    sem_init(&shared->fact_using, 1, 1);
+    sem_init(&shared->print_report, 1, 0);
+    sem_init(&shared->prod_running, 1, 0);
+    sem_init(&shared->message_ready, 1, 0);
+
+    // Initialize order_size in shared memory
+    shared->order_size = order_size;
+    printf("Initial order size: %d\n", shared->order_size);
+
+    // Variables for exec functions
 	const char *lines = "factory_lines";
 	const char *super = "supervisor";
 	char temp[20];
+	char cap[20];
+	char dur[20];
 
+	// Fork Supervisor
+	char line[20];
+	int ln = NUM_LINES;
+	sprintf(line, "%d", ln);
+	pid_t pid = fork();
+	execl(super, "5");
+
+	// Wait for message queue to be initialized
+	sem_wait(&shared->message_ready);
+
+	// Fork Lines
 	int i;
-	for (i = 1; i < 6; i++)
+	for (i = 1; i < NUM_LINES + 1; i++)
 	{
+		int capi = rand() % 41 + 10;
+		sprintf(cap, "%d", capi);
+
+		int duri = rand() % 401 + 100;
+		sprintf(dur, "%d", duri);
+
 		pid_t pid = fork();
 		if (pid == 0)
 		{
 			sprintf(temp,"%d", i);
+
 			wait(4);
-			execl(lines, temp);
+			execl(lines, temp, cap, dur);
 		}
 	}
-	execl(super, NULL);
 
     //Confirm end of manufacturing
+	sem_wait(&shared->prod_running);
     printf("All parts manufactured.\n");
+    shutDownFactoryLines(shared);
 
 }
-void shutDownFactoryLines()
+void shutDownFactoryLines(shared_data *shared)
 {
     printf("Factory line has been shut down.\n");
+    sem_post(&shared->print_report);
+    sem_wait(&shared->done);
 }
 void getAddress()
 {
