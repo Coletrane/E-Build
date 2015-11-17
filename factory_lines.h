@@ -1,10 +1,7 @@
 #ifndef factory_lines_h
 #define factory_lines_h
 
-#include "manufacturing.h"
-#include "shmem_ex.h"
-#include <stdlib.h>
-
+#include "supervisor.h"
 
 typedef struct {
     int factory_id;

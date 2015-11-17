@@ -12,13 +12,16 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 
+#define NUM_LINES 5
+#define SHM_KEY 10002
+#define SHM_SIZE sizeof(shared_data)
+
 typedef struct {
     int sarted;
     int finished;
     int order_size;
-    sem_t *mutex;
+    sem_t mutex;
 } shared_data;
-
 
 state_t*  manufacture_fail();
 state_t*  manufacture_complete();
