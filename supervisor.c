@@ -36,6 +36,7 @@ int main(int argc, char * argv[])
 		exit(-2);
 	} 
 
+	//let hardware know that message queue is ready
 	sem_post(&shared->message_ready);	
 	
 	while (linesActive > 0 ){
@@ -50,7 +51,6 @@ int main(int argc, char * argv[])
 		if (msg.mtype == 1) { //message is production
 			shared->iterations[msg.info.factory_id - 1] += msg.info.iterations;
 			shared->items_built[msg.info.factory_id - 1] += msg.info.num_items;
-
 		}
 		else if (msg.mtype == 2) { //message is termination
 			linesActive--;
@@ -59,9 +59,9 @@ int main(int argc, char * argv[])
 			printf("Unsupported Message received, will be discarded.\n");
 		}
 	}
-	
+	//Let parent know that all production lines have completed
 	sem_post(&shared->prod_running);
-
+	//Wait for signal to print report
 	sem_wait(&shared->print_report);
 
 	int i = 0;
@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
 		printf("Iterations performed by line %d: %d\n", i+1, shared->iterations[i]);
 		printf("Items built by line %d: %d\n", i+1, shared->iterations[i]);
 	}
-
+	//Let parent know it's done
 	sem_post(&shared->done);
 
 	/* 
@@ -80,5 +80,5 @@ int main(int argc, char * argv[])
 	Exit
 	*/
 
-	return 0;
+	exit(0);
 }
