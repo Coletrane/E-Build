@@ -95,6 +95,8 @@ int main(int argc, char * argv[])
 	Inform that supervisor is done
 	Exit
 	*/
-
+	shmdt(shared);
+	shmctl(shmid, IPC_RMID, NULL);
+	
 	exit(0);
 }

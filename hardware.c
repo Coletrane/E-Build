@@ -138,14 +138,18 @@ void dispatchFactoryLines()
     //Confirm end of manufacturing
 	sem_wait(&shared->prod_running);
     printf("All parts manufactured.\n");
-    shutDownFactoryLines(shared);
+    shutDownFactoryLines(shared, shmid);
 
 }
-void shutDownFactoryLines(shared_data *shared)
+void shutDownFactoryLines(shared_data *shared, int shmid)
 {
     printf("Factory line has been shut down.\n");
     sem_post(&shared->print_report);
     sem_wait(&shared->done);
+
+    shmdt(shared);
+	shmctl(shmid, IPC_RMID, NULL);
+
 
 }
 void getAddress()
