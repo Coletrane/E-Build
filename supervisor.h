@@ -18,13 +18,14 @@
 #include <sys/msg.h>
 
 #define NUM_LINES 5
-#define SHM_KEY 10002
+#define SHM_KEY 55555
 #define SHM_SIZE sizeof(shared_data)
 
 typedef struct {
-    int iterations[NUM_LINES] = {0, 0, 0, 0, 0};
-    int items_built[NUM_LINES] = {0, 0, 0, 0, 0};
+    int iterations[NUM_LINES + 1];
+    int items_built[NUM_LINES];
     int order_size;
+    sem_t fact_using;
     sem_t message_ready;
     sem_t prod_running;
     sem_t print_report; //init in Close
