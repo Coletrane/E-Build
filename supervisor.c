@@ -5,6 +5,7 @@
 int main(int argc, char * argv[])
 {
 	int num_lines = atoi(argv[0]);
+
 	// Create shared memory
     key_t shmkey = SHM_KEY;
     int shmflg = IPC_CREAT | S_IRUSR | S_IWUSR;
@@ -26,33 +27,45 @@ int main(int argc, char * argv[])
     int msgStatus;
     int linesActive = NUM_LINES;
 
-    message_buffer msg;
+    message_buffer snd_msg, rcv_msg;
     key_t msgQueueKey;
+    int msgFlg = IPC_CREAT | 0600;
     msgQueueKey = BASE_MAILBOX_NAME;
-    queueID = msgget(msgQueueKey, IPC_CREAT | 0600);
+    queueID = msgget(msgQueueKey, msgFlg);
 
     if (queueID < 0) {
-		sprintf("Failed to create mailbox %X. Error code=%d\n", msgQueKey , errno ) ;
+		printf("Failed to create mailbox %X. Error code=%d\n", msgQueueKey , errno ) ;
 		exit(-2);
 	} 
+    else
+    {
+    	printf("Supervisor: mailbox created with id: %d\n", queueID);
+    }
 
 	//let hardware know that message queue is ready
-	sem_post(&shared->message_ready);	
-	
+	sem_post(&shared->message_ready);
+
 	while (linesActive > 0 ){
-		printf ("\nWaiting to receive message ...\n" );
-		msgStatus = msgrcv(queueID, &msg, MSG_INFO_SIZE, 1, 0);
+		printf ("\nSupervisor: waiting to receive message. Lines active: %d\n",
+				linesActive);
+		msgStatus = msgrcv(queueID, &rcv_msg, MSG_INFO_SIZE, 1, 0);
 	
 		if ( msgStatus < 0 )
 		{
 			printf("Failed to receive message from User process on queueID %d. Error code=%d\n", queueID , errno ) ;
 			exit(-2) ;
 		}
-		if (msg.mtype == 1) { //message is production
-			shared->iterations[msg.info.factory_id - 1] += msg.info.iterations;
-			shared->items_built[msg.info.factory_id - 1] += msg.info.num_items;
+		if (rcv_msg.mtype == 1) { //message is production
+			printf("Message received from Factory line : %d with code: %d\n",
+					rcv_msg.info.factory_id, rcv_msg.mtype);
+			printf("Updating production log...\n");
+			shared->iterations[rcv_msg.info.factory_id] = rcv_msg.info.iterations;
+			shared->items_built[rcv_msg.info.factory_id] = rcv_msg.info.num_items;
 		}
-		else if (msg.mtype == 2) { //message is termination
+		else if (rcv_msg.mtype == 2) { //message is termination
+			printf("Message received from Factory line : %d with code: %d\n",
+					rcv_msg.info.factory_id, rcv_msg.mtype);
+			printf("Terminating Factory line: %d\n", rcv_msg.mtype);
 			linesActive--;
 		}
 		else {
@@ -61,18 +74,20 @@ int main(int argc, char * argv[])
 	}
 	//Let parent know that all production lines have completed
 	sem_post(&shared->prod_running);
+
 	//Wait for signal to print report
 	sem_wait(&shared->print_report);
 
-	int i = 0;
-	for (i = 0, i < 5, i++){
-		printf("Iterations performed by line %d: %d\n", i+1, shared->iterations[i]);
-		printf("Items built by line %d: %d\n", i+1, shared->iterations[i]);
+	int i;
+	for (i = 1; i <= NUM_LINES; i++)
+	{
+		printf("Factory line: %d Total iterations: %d	Total items made: %d\n",
+				i, shared->iterations[i], shared->items_built[i]);
 	}
 	//Let parent know it's done
 	sem_post(&shared->done);
 
-	/* 
+	/*
 	Inform parent that lines are done
 	Wait for permission to print production aggregates
 	Print prod agg
