@@ -24,7 +24,7 @@ int main(int argc, char * argv[])
 
     int queueID;
     int msgStatus;
-    int linesActive = NUM_LINES;
+    shared->lines_active = NUM_LINES;
 
     message_buffer snd_msg, rcv_msg;
     key_t msgQueueKey;
@@ -44,9 +44,9 @@ int main(int argc, char * argv[])
 	//let hardware know that message queue is ready
 	sem_post(&shared->message_ready);
 
-	while (linesActive > 0 ){
+	while (shared->lines_active > 0 ){
 		printf ("\nSupervisor: waiting to receive message. Lines active: %d\n",
-				linesActive);
+				shared->lines_active);
 		msgStatus = msgrcv(queueID, &rcv_msg, MSG_INFO_SIZE, 0, 0);
 	
 		if ( msgStatus < 0 )
@@ -65,13 +65,17 @@ int main(int argc, char * argv[])
 			printf("Message received from Factory line : %d with code: %d\n",
 					rcv_msg.info.factory_id, rcv_msg.mtype);
 			printf("Terminating Factory line: %d\n", rcv_msg.mtype);
-			linesActive--;
+			shared->lines_active--;
 		}
 		else {
 			printf("Unsupported Message received, will be discarded.\n");
 		}
 	}
+	int j;
+
+	//sem_wait(&shared->line_finish);
 	//Let parent know that all production lines have completed
+	//wait(5);
 	sem_post(&shared->prod_running);
 
 	//Wait for signal to print report

@@ -10,6 +10,6 @@ typedef struct {
 } message_buffer ;
 
 #define MSG_INFO_SIZE sizeof(message_buffer)
-#define BASE_MAILBOX_NAME 1100
+#define BASE_MAILBOX_NAME 2000
 
 void printMsg( message_buffer *m ) ;

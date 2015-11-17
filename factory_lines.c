@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
         param->capacity = atoi(argv[1]);
         param->duration = atoi(argv[2]);
         printf("Factory line: %d created with capacity: %d and duration: %d\n",
-        		param->factory_id, param->capacity, param->duration);
+                param->factory_id, param->capacity, param->duration);
     }
     else
     {
@@ -74,13 +74,13 @@ int main(int argc, char *argv[])
     queueID = msgget(msgQueueKey, IPC_EXCL | 0600);
 
     if (queueID < 0) {
-		printf("Failed to create mailbox %X. Error code=%d\n", msgQueueKey , errno ) ;
-		exit(-2);
-	}
+        printf("Failed to create mailbox %X. Error code=%d\n", msgQueueKey , errno ) ;
+        exit(-2);
+    }
     else
     {
-    	printf("Factory line: %d mailbox created successfully with id: %d\n",
-    			param->factory_id, queueID);
+        printf("Factory line: %d mailbox created successfully with id: %d\n",
+                param->factory_id, queueID);
     }
 
     // Loop until order is complete
@@ -92,24 +92,24 @@ int main(int argc, char *argv[])
             // Lock semaphore to update order_size
             sem_wait(&shared->fact_using);
             printf("Factory line: %d order size: %d\n",
-            		param->factory_id, shared->order_size);
+                    param->factory_id, shared->order_size);
             shared->order_size -= param->capacity;
             printf("Factory line: %d order size: %d\n",
-            		param->factory_id, shared->order_size);
+                    param->factory_id, shared->order_size);
             sem_post(&shared->fact_using);
 
             // Update params
             param->iterations++;
             param->num_items += param->capacity;
             printf("Factory line: %d Iterations: %d Parts Made: %d\nMaking parts...\n",
-            		param->factory_id, param->iterations, param->num_items);
+                    param->factory_id, param->iterations, param->num_items);
             usleep(param->duration * 1000);
 
             // Send message of params to supervisor
             snd_msg.mtype = 1;
             snd_msg.info = *param;
             printf("Factory Line: %d Sending message to supervisor with code: %d\n\n",
-            		param->factory_id, snd_msg.mtype);
+                    param->factory_id, snd_msg.mtype);
             msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
         }
         // Last iteration
@@ -119,25 +119,25 @@ int main(int argc, char *argv[])
             sem_wait(&shared->fact_using);
             param->num_items += shared->order_size;
             printf("Factory line: %d order size: %d\n",
-            		param->factory_id, shared->order_size);
+                    param->factory_id, shared->order_size);
             shared->order_size = 0;
 
             // Send message about order_size
             sem_post(&shared->fact_using);
             printf("Factory line: %d order size: %d\n",
-            		param->factory_id, shared->order_size);
+                    param->factory_id, shared->order_size);
 
             // Update lines' parameters
             param->iterations++;
             printf("Factory line: %d Iterations: %d Parts Made: %d\nMaking parts...\n",
-            		param->factory_id, param->iterations, param->num_items);
+                    param->factory_id, param->iterations, param->num_items);
             usleep(param->duration * 1000);
 
             // Send message of params to supervisor
             snd_msg.mtype = 2;
             snd_msg.info = *param;
             printf("Factory line: %d sending message to supervisor with code: %d\n\n",
-            		param->factory_id,snd_msg.mtype);
+                    param->factory_id,snd_msg.mtype);
             msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
             param->first_line_closed = 1;
         }
@@ -148,10 +148,11 @@ int main(int argc, char *argv[])
         snd_msg.mtype = 2;
         snd_msg.info = *param;
         printf("Factory line: %d Sending message to supervisor with code: %d\n\n",
-          		param->factory_id, snd_msg.mtype);
+                param->factory_id, snd_msg.mtype);
         msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
      }
-    
+     //if (shared->lines_active == 0)
+        //    sem_post(&shared->line_finish);
 }
 
 

@@ -96,6 +96,7 @@ void dispatchFactoryLines()
     sem_init(&shared->print_report, 1, 0);
     sem_init(&shared->prod_running, 1, 0);
     sem_init(&shared->message_ready, 1, 0);
+    sem_init(&shared->line_finish, 1, 0);
 
     // Initialize order_size in shared memory
     shared->order_size = order_size;
@@ -107,13 +108,12 @@ void dispatchFactoryLines()
 	char temp[20];
 	char cap[20];
 	char dur[20];
+	char line[20];
 
 	// Fork Supervisor
-	char line[20];
-	int ln = NUM_LINES;
-	sprintf(line, "%d", ln);
 	pid_t pid = fork();
-	execl(super, "5");
+	if (pid == 0)
+		execlp("gnome-terminal", "Supervisor" , "-x", "/bin/bash", "-c", "./supervisor 5", NULL);
 
 	// Wait for message queue to be initialized
 	sem_wait(&shared->message_ready);
@@ -122,19 +122,15 @@ void dispatchFactoryLines()
 	int i;
 	for (i = 1; i < NUM_LINES + 1; i++)
 	{
-		int capi = random() % 41 + 10;
-		sprintf(cap, "%d", capi);
-
-		int duri = random() % 401 + 100;
-		sprintf(dur, "%d", duri);
-
 		pid_t pid = fork();
 		if (pid == 0)
 		{
-			sprintf(temp,"%d", i);
+			int capi = random() % 41 + 10;
+			int duri = random() % 401 + 100;
+			sprintf(line,"./factory_lines %d %d %d", i, capi, duri);
 
 			wait(4);
-			execl(lines, temp, cap, dur);
+			execlp("gnome-terminal", "Factory Line" , "-x", "/bin/bash", "-c", line, NULL);
 		}
 	}
 
@@ -149,6 +145,7 @@ void shutDownFactoryLines(shared_data *shared)
     printf("Factory line has been shut down.\n");
     sem_post(&shared->print_report);
     sem_wait(&shared->done);
+
 }
 void getAddress()
 {

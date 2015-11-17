@@ -18,18 +18,20 @@
 #include <sys/msg.h>
 
 #define NUM_LINES 5
-#define SHM_KEY 55555
+#define SHM_KEY 454545
 #define SHM_SIZE sizeof(shared_data)
 
 typedef struct {
     int iterations[NUM_LINES + 1];
-    int items_built[NUM_LINES];
+    int items_built[NUM_LINES + 1];
     int order_size;
+ 	int lines_active;
     sem_t fact_using;
     sem_t message_ready;
     sem_t prod_running;
     sem_t print_report; //init in Close
     sem_t done;
+    sem_t line_finish;
 } shared_data;
 
 state_t*  manufacture_fail();
