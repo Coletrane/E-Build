@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
     // Assign parameters from command line input 
     if (argc > 0)
     {
-        param->factory_id = atoi(argv[0]);
-        param->capacity = atoi(argv[1]);
-        param->duration = atoi(argv[2]);
+        param->factory_id = atoi(argv[1]);
+        param->capacity = atoi(argv[2]);
+        param->duration = atoi(argv[3]);
         printf("Factory line: %d created with capacity: %d and duration: %d\n",
                 param->factory_id, param->capacity, param->duration);
     }
@@ -134,23 +134,35 @@ int main(int argc, char *argv[])
             usleep(param->duration * 1000);
 
             // Send message of params to supervisor
-            snd_msg.mtype = 2;
-            snd_msg.info = *param;
+            snd_msg.mtype = 1;
+            snd_msg.info.iterations = param->iterations;
+            snd_msg.info.num_items = param->num_items;
+            snd_msg.info.factory_id = param->factory_id;
+
             printf("Factory line: %d sending message to supervisor with code: %d\n\n",
                     param->factory_id,snd_msg.mtype);
             msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
-            param->first_line_closed = 1;
+            //param->first_line_closed = 1;
         }
     }
+    //kill(1);
+
+
     // Terminate remaining lines
-    if (param->first_line_closed == 0)
-    {
+    //if (param->first_line_closed == 0)
+    //{
         snd_msg.mtype = 2;
-        snd_msg.info = *param;
+        //snd_msg.info = *param;
+        snd_msg.info.iterations = param->iterations;
+        snd_msg.info.num_items = param->num_items;
+        snd_msg.info.factory_id = param->factory_id;
+
         printf("Factory line: %d Sending message to supervisor with code: %d\n\n",
                 param->factory_id, snd_msg.mtype);
         msgsnd(queueID, &snd_msg, MSG_INFO_SIZE, 0);
-     }
+     //}
+
+     exit(0);
      //if (shared->lines_active == 0)
         //    sem_post(&shared->line_finish);
 }

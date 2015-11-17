@@ -64,15 +64,13 @@ int main(int argc, char * argv[])
 		else if (rcv_msg.mtype == 2) { //message is termination
 			printf("Message received from Factory line : %d with code: %d\n",
 					rcv_msg.info.factory_id, rcv_msg.mtype);
-			printf("Terminating Factory line: %d\n", rcv_msg.mtype);
+			printf("Terminating Factory line: %d\n", rcv_msg.info.factory_id);
 			shared->lines_active--;
 		}
 		else {
 			printf("Unsupported Message received, will be discarded.\n");
 		}
 	}
-	int j;
-
 	//sem_wait(&shared->line_finish);
 	//Let parent know that all production lines have completed
 	//wait(5);

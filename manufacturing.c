@@ -38,7 +38,7 @@ void entry_to()
 
 void exit_from()
 {
-    shutDownFactoryLines();
+    //shutDownFactoryLines();
 }
 
 #endif

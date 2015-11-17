@@ -18,7 +18,7 @@
 #include <sys/msg.h>
 
 #define NUM_LINES 5
-#define SHM_KEY 454545
+#define SHM_KEY 2323232
 #define SHM_SIZE sizeof(shared_data)
 
 typedef struct {

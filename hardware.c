@@ -122,18 +122,19 @@ void dispatchFactoryLines()
 	int i;
 	for (i = 1; i < NUM_LINES + 1; i++)
 	{
+		int capi = random() % 41 + 10;
+		int duri = random() % 401 + 100;
+		sprintf(line,"./factory_lines %d %d %d", i, capi, duri);
 		pid_t pid = fork();
 		if (pid == 0)
 		{
-			int capi = random() % 41 + 10;
-			int duri = random() % 401 + 100;
-			sprintf(line,"./factory_lines %d %d %d", i, capi, duri);
+			
 
-			wait(4);
+			//wait(4);
 			execlp("gnome-terminal", "Factory Line" , "-x", "/bin/bash", "-c", line, NULL);
 		}
 	}
-
+	
     //Confirm end of manufacturing
 	sem_wait(&shared->prod_running);
     printf("All parts manufactured.\n");
