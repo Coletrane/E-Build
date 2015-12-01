@@ -7,7 +7,8 @@
 #include "server.h"
 
 int order_size = 0;
-int ord_count = 0;		// Sentinel for callng srandom only once
+int ord_count = 0;		// Sentinel for calling srandom only once
+int client_count = 0;
 
 // Order function: generates random seed and random order size
 void order_init()
@@ -42,22 +43,22 @@ int main()
 	order_init();
 
 	sock = serverUDPsock(port);
-
+	printf("Order Size: %d\n", order_size);
+	printf("Server waiting...\n");
 	while (1)
 	{
-		printf("Server waiting...\n");
-
-		if (recv(sock, &rcv, sizeof(server_rcv), 0) > 0)
+		if (recv(sock, &rcv, sizeof(rcv_t), 0) > 0)
 		{
 			switch (rcv.msg_code)
 			{
 				case 1 :
-					printf("Received from Client: %d Message Code: 1 (Init Client)\n",
-							rcv.client_id);
-					init_client_params(&client[rcv.client_id], rcv.client_id);
+					client_count += 1;
+					printf("Received Message Code: 1 initializing client: %d\n",
+							client_count);
+					init_client_params(&client[client_count], client_count);
 					snd.msg_code = 1;
-					snd.init_cap = client[rcv.client_id].cap;
-					snd.init_dur = client[rcv.client_id].dur;
+					snd.param.cap = client[rcv.client_id].cap;
+					snd.param.dur = client[rcv.client_id].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv.client_id);
 					sendto(sock, &snd, sizeof(snd_t), 0, (SA *) &fsin[rcv.client_id],
