@@ -22,6 +22,7 @@ typedef struct {
 
 typedef struct {
 	int msg_code;	// 1 = initialize capacity and duration, 2 = make items, 3 = make no more items
+	int client_id;
 	client_param param;
 	int num_make;
 } snd_t;

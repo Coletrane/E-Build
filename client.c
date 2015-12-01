@@ -7,17 +7,28 @@
 #include "mySock.h"
 #include "client.h"
 
+#define MAXBUFLEN 256
+
 int main(int argc, char ** argv){
 	char *host = argv[1];
-	char *port = argv[2];
+	int port = atoi(argv[2]);
 	char *service = "server";
+	int sock;
 
-	s = clientUDPsock(host, service);
+	sock = clientUDPsock(port, service);
 
 	snd_t send;
-	rcv_t receive;
+	snd_t receive;
 	send.msg_code = 1;
 
 	fprintf(stderr, "Client asking server for information");
-	sendto(s, (void *) &send, sizeof(snd_t), NULL, 0)
+	sendto(s, (void *) &send, sizeof(snd_t), NULL, 0 );
+
+	fprintf(stderr, "waiting on server\n");
+	n = recvfrom(s, (void *) receive, sizeof(snd_t), NULL, 0);
+	if (n <= 0)
+		err_sys("Failed to get init message from server");
+
+	
+
 }
