@@ -1,4 +1,3 @@
-#include "server.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -6,18 +5,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include "mySock.h"
+#include "server.h"
 
-#define NUM_CLIENTS 5
-
-typedef struct {
-	int id;
-	int cap;
-	int dur;
-	int num_made;
-	int iter;
-} client_param;
-
-client_param client[NUM_CLIENTS];
 int order_size = 0;
 
 // Order function: generates random seed and random order size
@@ -36,15 +25,19 @@ void init_client_params(client_param *client, int id)
 	client->id = id;
 	client->cap = random() % 491 + 10;
 	client->dur = random() % 401 + 100;
+	client->num_iter = 0;
+	client->total_dur = 0;
 }
 
 int main()
 {
 	struct sockaddr_in fsin[NUM_CLIENTS];
-	char buf[MAXBUFLEN];
+	server_snd snd;
+	server_rcv rcv;
 	unsigned short port = BASEPORT;
 	int sock;
 	unsigned int alen;
+	int num_complete = 0;
 
 	order_init();
 
@@ -52,42 +45,61 @@ int main()
 
 	while (1)
 	{
-		if (order_size == 0)
-			break;
-
-		alen = sizeof(fsin);
 		printf("Server waiting...\n");
 
-		// Receive message
-		// Message format:  Index 0 = message code
-		//					Index 1 = client id
-		//					Index 2 =
-		if (recv(sock, buf, MAXBUFLEN, 0) > 0)
+		if (recv(sock, rcv, sizeof(server_rcv), 0) > 0)
 		{
-			int mcode = atoi(buf[0]);
-			switch (mcode)
+			switch (rcv.msg_code)
 			{
 				case 1 :
-					int id = atoi(buf[0]);
-					init_client_params(&client[id], id);
+					printf("Received from Client: %d Message Code: 1 (Init Client)\n",
+							rcv.client_id);
+					init_client_params(&client[rcv.client_id], rcv.client_id);
+					snd.msg_code = 1;
+					snd.init_cap = client[rcv.client_id].cap;
+					snd.init_dur = client[rcv.client_id].dur;
+					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
+							rcv.client_id);
+					sendto(sock, snd, sizeof(server_snd), 0, fsin[rcv.client_id],
+							sizeof(fsin[rcv.client_id]));
 					break;
 
 				case 2 :
-					int cid = atoi(buf[1]);
-					char snd[MAXBUFLEN];
-					// Message format:  Index 0 = message code
-					//					Index 1..n = num items to make
-					if (order_size >= client[cid].cap)
+					printf("Received from Client: %d Message Code: 2 (Make Request)\n",
+							rcv.client_id);
+					if (order_size >= client[rcv.client_id].cap)
 					{
-						snd = "1";
-						sendto(sock, snd, MAXBUFLEN, 0, fsin[cid], sizeof(fsin[cid]));
+						snd.num_make = client[rcv.client_id].cap;
+						printf("Sending to Client: %d Make Request for %d items\n",
+								rcv.client_id, snd.num_make);
+						sendto(sock, snd, sizeof(server_snd), 0,
+								fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
 					}
-					else if (order_size < client[cid].cap)
+					else if (order_size < client[rcv.client_id].cap && order_size > 0)
 					{
-						char c[20] = client[cid].cap + '0';
-						snd = '2', c;
-						//sendto(sock,)
+						snd.num_make = order_size;
+						printf("Sending to Client: %d Make Request for %d items\n",
+								rcv.client_id, snd.num_make);
+						sendto(sock, snd, sizeof(server_snd), 0,
+								fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
 					}
+					else
+					{
+						snd.num_make = 0;
+						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
+								rcv.client_id);
+						sendto(sock, snd, sizeof(server_snd), 0,
+								fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+					}
+					break;
+
+				case 3 :
+					printf("Received from Client: %d Message Code: 3 (Completed Iteration)\n",
+							rcv.client_id);
+					client[rcv.client_id].num_iter++;
+					client[rcv.client_id].num_made += rcv.num_made;
+					client[rcv.client_id].total_dur += client[rcv.client_id].total_dur;
+					break;
 			}
 		}
 
