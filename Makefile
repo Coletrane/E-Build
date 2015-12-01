@@ -1,7 +1,7 @@
 driver: driver.o statemodel.o hardware.o state.o accepting.o manufacturing.o processing.o shipping.o
 	gcc driver.o statemodel.o hardware.o state.o accepting.o manufacturing.o processing.o shipping.o -w -lpthread -o driver
-	gcc factory_lines.c -w -lpthread -o factory_lines
-	gcc supervisor.c -w -lpthread -o supervisor
+	gcc server.c mySock.c -w -o server
+	gcc client.c mySock.c -w -o client
 
 driver.o: driver.c hardware.h statemodel.h
 	gcc -c driver.c -w
@@ -30,5 +30,5 @@ opening.o: state.h shipping.h shipping.c
 clean:
 	rm *.o
 	rm driver
-	rm factory_lines
-	rm supervisor
+	rm server
+	rm client
