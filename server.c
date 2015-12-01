@@ -35,14 +35,16 @@ int main()
 	struct sockaddr_in fsin[NUM_CLIENTS +1];
 	snd_t snd;
 	rcv_t rcv;
-	unsigned short port = BASEPORT;
+	unsigned short port;
 	int sock;
 	unsigned int alen;
 	int num_complete = 0;
 
+
 	order_init();
 
 	sock = serverUDPsock(port);
+
 	printf("Order Size: %d\n", order_size);
 	printf("Server waiting...\n");
 	while (1)
