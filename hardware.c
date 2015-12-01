@@ -15,18 +15,6 @@ static stats_t STATS;           // Order status
 int order_size = 0;				// Global since initialization is in another function
 int ord_count = 0;              // Sentinel for calling srandom only once
 
-
-// Order function: generates random seed and random order size
-void order_init()
-{
-	if (ord_count == 0)
-	{
-		srandom(time(NULL));
-		ord_count++;
-	}
-	order_size = random() % 1001 + 1000;
-}
-
 // Transition functions
 void resetAttempts()
 {
