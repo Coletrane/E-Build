@@ -1,3 +1,8 @@
+#ifndef server_h
+#define server_h
+
+#include "mySock.h"
+
 #define NUM_CLIENTS 5
 
 typedef struct {
@@ -22,4 +27,5 @@ typedef struct {
 	int num_make;
 } server_snd;
 
-client_param client[NUM_CLIENTS];
+client_param client[NUM_CLIENTS + 1];	// Will not use 0
+#endif

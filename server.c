@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
-#include "mySock.h"
 #include "server.h"
 
 int order_size = 0;
+int ord_count = 0;		// Sentinel for callng srandom only once
 
 // Order function: generates random seed and random order size
 void order_init()
@@ -17,7 +17,7 @@ void order_init()
 		srandom(time(NULL));
 		ord_count++;
 	}
-	order_size = random() % 1001 + 1000;
+	order_size = random() % 40001 + 10000;
 }
 
 void init_client_params(client_param *client, int id)
@@ -31,7 +31,7 @@ void init_client_params(client_param *client, int id)
 
 int main()
 {
-	struct sockaddr_in fsin[NUM_CLIENTS];
+	struct sockaddr_in fsin[NUM_CLIENTS +1];
 	server_snd snd;
 	server_rcv rcv;
 	unsigned short port = BASEPORT;
@@ -47,7 +47,7 @@ int main()
 	{
 		printf("Server waiting...\n");
 
-		if (recv(sock, rcv, sizeof(server_rcv), 0) > 0)
+		if (recv(sock, &rcv, sizeof(server_rcv), 0) > 0)
 		{
 			switch (rcv.msg_code)
 			{
@@ -60,7 +60,7 @@ int main()
 					snd.init_dur = client[rcv.client_id].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv.client_id);
-					sendto(sock, snd, sizeof(server_snd), 0, fsin[rcv.client_id],
+					sendto(sock, &snd, sizeof(server_snd), 0, (SA *) &fsin[rcv.client_id],
 							sizeof(fsin[rcv.client_id]));
 					break;
 
@@ -72,24 +72,24 @@ int main()
 						snd.num_make = client[rcv.client_id].cap;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv.client_id, snd.num_make);
-						sendto(sock, snd, sizeof(server_snd), 0,
-								fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+						sendto(sock, &snd, sizeof(server_snd), 0,
+								(SA *) &fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
 					}
 					else if (order_size < client[rcv.client_id].cap && order_size > 0)
 					{
 						snd.num_make = order_size;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv.client_id, snd.num_make);
-						sendto(sock, snd, sizeof(server_snd), 0,
-								fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+						sendto(sock, &snd, sizeof(server_snd), 0,
+								(SA *) &fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
 					}
 					else
 					{
 						snd.num_make = 0;
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
 								rcv.client_id);
-						sendto(sock, snd, sizeof(server_snd), 0,
-								fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+						sendto(sock, &snd, sizeof(server_snd), 0,
+								(SA *) &fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
 					}
 					break;
 

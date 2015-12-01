@@ -1,3 +1,5 @@
+#ifndef mysock_h
+#define mysock_h
 
 void err_sys(const char* x) ;
 void err_quit(const char* x)  ;
@@ -6,3 +8,4 @@ int serverUDPsock(const unsigned short port) ;
 
 typedef struct sockaddr SA ;
 #define BASEPORT 50000   /* port base for non-root servers */
+#endif
