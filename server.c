@@ -35,7 +35,7 @@ int main()
 	struct sockaddr_in fsin;
 	snd_t *snd;
 	rcv_t *rcv;
-	unsigned short port = 47;
+	unsigned short port = 13;
 	int sock;
 	unsigned int alen;
 	int num_complete = 0;
