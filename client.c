@@ -22,9 +22,8 @@ int main(int argc, char *argv[]){
 			break;
 		case 3:
 			service = argv[2];
-			host = argv[1];
-			break;
 		case 2:
+			host = argv[1];
 			break;
 		default:
 			fprintf(stderr, "usage %s [host[port]]\n", argv[0]);

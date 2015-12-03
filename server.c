@@ -50,7 +50,7 @@ int main()
 	printf("Server waiting...\n");
 	while (1)
 	{
-		if (recvfrom,(sock, (void *) rcv, sizeof(rcv_t), 0, &fsin, sizeof(fsin)) > 0)
+		if (recvfrom(sock, (void *) rcv, sizeof(rcv_t), 0, &fsin, sizeof(fsin)) > 0)
 		{
 			switch (rcv->msg_code)
 			{
