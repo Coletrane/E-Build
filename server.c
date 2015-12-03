@@ -6,20 +6,6 @@
 #include <stdlib.h>
 #include "server.h"
 
-int ord_count = 0;		// Sentinel for calling srandom only once
-
-
-// Order function: generates random seed and random order size
-void order_init()
-{
-	if (ord_count == 0)
-	{
-		srandom(time(NULL));
-		ord_count++;
-	}
-	order_size = random() % 40001 + 10000;
-}
-
 int main()
 {
 	struct sockaddr_in fsin;
@@ -30,9 +16,11 @@ int main()
 	unsigned int alen;
 	int num_complete = 0;
 	int client_count = 0;
-	int order_size = 0;
 
-	order_init();
+	// Declare and initialize order size
+	int order_size;
+	srandom(time(NULL));
+	order_size = random() % 40001 + 10000;
 
 	sock = serverUDPsock(port);
 
