@@ -59,7 +59,7 @@ int main()
 
 					// Compose and send a message to the client
 					snd->msg_code = 1;
-					snd->param.cap = client.cap;
+					snd->param.cap = client[client_count].cap;
 					snd->param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv->client_id);
