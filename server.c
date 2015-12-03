@@ -52,6 +52,7 @@ int main()
 	{
 		if (recvfrom(sock, rcv, sizeof(rcv_t), 0, (SA *) &fsin, sizeof(fsin)) > 0)
 		{
+			printf("Recieved!\n");
 			switch (rcv->msg_code)
 			{
 				case 1 :
