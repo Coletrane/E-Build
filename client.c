@@ -14,7 +14,7 @@
 int main(int argc, char *argv[]){
 	char *host = "localhost";
 	char *service = "server";
-	int sock, n;
+	int s, n;
 
 	switch (argc)
 	{
@@ -31,17 +31,17 @@ int main(int argc, char *argv[]){
 			exit(1);
 	}
 	printf("Host: %s\nService: %s\n", host, service);
-	sock = clientUDPsock(host, service);
+	s = clientUDPsock(host, service);
 
-	snd_t snd;
-	rcv_t rcv;
-	snd.msg_code = 1;
+	snd_t *snd;
+	rcv_t *rcv;
+	snd->msg_code = 1;
 
 	fprintf(stderr, "Client asking server for information\n");
-	sendto(sock, (void*) &send, sizeof(snd_t), NULL, 0);
+	send(s, (void *) snd, sizeof(snd_t)+1, 0);
 
 	fprintf(stderr, "Waiting on server...\n");
-	n = recvfrom(sock, (void*) &rcv, sizeof(snd_t), NULL, 0);
+	n = recv(s, (void *) rcv, sizeof(snd_t)+1, 0);
 	printf("Here\n");
 	if (n <= 0)
 		err_sys("Failed to get init message from server");

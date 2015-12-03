@@ -33,8 +33,8 @@ void init_client_params(client_param *client, int id)
 int main()
 {
 	struct sockaddr_in fsin;
-	snd_t snd;
-	rcv_t rcv;
+	snd_t *snd;
+	rcv_t *rcv;
 	unsigned short port = 47;
 	int sock;
 	unsigned int alen;
@@ -50,7 +50,7 @@ int main()
 	printf("Server waiting...\n");
 	while (1)
 	{
-		if (recvfrom,(sock, &rcv, sizeof(rcv_t), 0, &fsin, sizeof(fsin)) > 0)
+		if (recvfrom,(sock, (void *) rcv, sizeof(rcv_t), 0, &fsin, sizeof(fsin)) > 0)
 		{
 			switch (rcv.msg_code)
 			{
@@ -64,7 +64,7 @@ int main()
 					snd.param.dur = client[rcv.client_id].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv.client_id);
-					sendto(sock, &snd, sizeof(snd_t), 0, (SA *) &fsin,
+					sendto(sock, (void *) snd, sizeof(snd_t), 0, (SA *) &fsin,
 							sizeof(fsin));
 					break;
 
@@ -76,7 +76,7 @@ int main()
 						snd.num_make = client[rcv.client_id].cap;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv.client_id, snd.num_make);
-						sendto(sock, &snd, sizeof(snd_t), 0,
+						sendto(sock, (void *) snd, sizeof(snd_t), 0,
 								(SA *) &fsin, sizeof(fsin));
 					}
 					else if (order_size < client[rcv.client_id].cap && order_size > 0)
@@ -84,7 +84,7 @@ int main()
 						snd.num_make = order_size;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv.client_id, snd.num_make);
-						sendto(sock, &snd, sizeof(snd_t), 0,
+						sendto(sock, (void *) snd, sizeof(snd_t), 0,
 								(SA *) &fsin, sizeof(fsin));
 					}
 					else
@@ -92,7 +92,7 @@ int main()
 						snd.num_make = 0;
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
 								rcv.client_id);
-						sendto(sock, &snd, sizeof(snd_t), 0,
+						sendto(sock, (void *) snd, sizeof(snd_t), 0,
 								(SA *) &fsin, sizeof(fsin));
 					}
 					break;
