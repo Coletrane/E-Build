@@ -52,46 +52,46 @@ int main()
 	{
 		if (recvfrom,(sock, (void *) rcv, sizeof(rcv_t), 0, &fsin, sizeof(fsin)) > 0)
 		{
-			switch (rcv.msg_code)
+			switch (rcv->msg_code)
 			{
 				case 1 :
 					client_count++;
 					printf("Received Message Code: 1 initializing client: %d\n",
 							client_count);
 					init_client_params(&client[client_count], client_count);
-					snd.msg_code = 1;
-					snd.param.cap = client[rcv.client_id].cap;
-					snd.param.dur = client[rcv.client_id].dur;
+					snd->msg_code = 1;
+					snd->param.cap = client[rcv->client_id].cap;
+					snd->param.dur = client[rcv->client_id].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
-							rcv.client_id);
+							rcv->client_id);
 					sendto(sock, (void *) snd, sizeof(snd_t), 0, (SA *) &fsin,
 							sizeof(fsin));
 					break;
 
 				case 2 :
 					printf("Received from Client: %d Message Code: 2 (Make Request)\n",
-							rcv.client_id);
-					if (order_size >= client[rcv.client_id].cap)
+							rcv->client_id);
+					if (order_size >= client[rcv->client_id].cap)
 					{
-						snd.num_make = client[rcv.client_id].cap;
+						snd->num_make = client[rcv->client_id].cap;
 						printf("Sending to Client: %d Make Request for %d items\n",
-								rcv.client_id, snd.num_make);
+								rcv->client_id, snd->num_make);
 						sendto(sock, (void *) snd, sizeof(snd_t), 0,
 								(SA *) &fsin, sizeof(fsin));
 					}
-					else if (order_size < client[rcv.client_id].cap && order_size > 0)
+					else if (order_size < client[rcv->client_id].cap && order_size > 0)
 					{
-						snd.num_make = order_size;
+						snd->num_make = order_size;
 						printf("Sending to Client: %d Make Request for %d items\n",
-								rcv.client_id, snd.num_make);
+								rcv->client_id, snd->num_make);
 						sendto(sock, (void *) snd, sizeof(snd_t), 0,
 								(SA *) &fsin, sizeof(fsin));
 					}
 					else
 					{
-						snd.num_make = 0;
+						snd->num_make = 0;
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
-								rcv.client_id);
+								rcv->client_id);
 						sendto(sock, (void *) snd, sizeof(snd_t), 0,
 								(SA *) &fsin, sizeof(fsin));
 					}
@@ -99,10 +99,10 @@ int main()
 
 				case 3 :
 					printf("Received from Client: %d Message Code: 3 (Completed Iteration)\n",
-							rcv.client_id);
-					client[rcv.client_id].num_iter++;
-					client[rcv.client_id].num_made += rcv.num_made;
-					client[rcv.client_id].total_dur += client[rcv.client_id].total_dur;
+							rcv->client_id);
+					client[rcv->client_id].num_iter++;
+					client[rcv->client_id].num_made += rcv->num_made;
+					client[rcv->client_id].total_dur += client[rcv->client_id].total_dur;
 					break;
 			}
 		}
