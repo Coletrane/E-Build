@@ -47,7 +47,6 @@ int main()
 
 
 					// Compose and send a message to the client
-					snd.msg_code = 1;
 					snd.param.cap = client[client_count].cap;
 					snd.param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
@@ -61,6 +60,7 @@ int main()
 							rcv->client_id);
 					if (order_size >= client[rcv->client_id].cap)
 					{
+						snd.msg_code = 1;
 						snd.num_make = client[rcv->client_id].cap;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd.num_make);
@@ -69,6 +69,7 @@ int main()
 					}
 					else if (order_size < client[rcv->client_id].cap && order_size > 0)
 					{
+						snd.msg_code = 2;
 						snd.num_make = order_size;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd.num_make);

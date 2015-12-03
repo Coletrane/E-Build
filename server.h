@@ -15,7 +15,8 @@ typedef struct {
 } client_param;
 
 typedef struct {
-	int msg_code;	// 1 = initialize capacity and duration, 2 = make items, 3 = make no more items
+	int msg_code;	// From Client: 1 = initialize parameters, 2 = make items, 3 = production update
+					// From Server: 1 = make total capacity, 2 = make less than capacity
 	int client_id;
 	client_param param;
 	int num_make;
