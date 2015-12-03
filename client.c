@@ -22,25 +22,27 @@ int main(int argc, char *argv[]){
 			break;
 		case 3:
 			service = argv[2];
+			host = argv[1];
 			break;
 		case 2:
-			host = argv[1];
 			break;
 		default:
 			fprintf(stderr, "usage %s [host[port]]\n", argv[0]);
 			exit(1);
 	}
+	printf("Host: %s\nService: %s\n", host, service);
 	sock = clientUDPsock(host, service);
 
 	snd_t snd;
 	rcv_t rcv;
 	snd.msg_code = 1;
 
-	fprintf(stderr, "Client asking server for information");
-	send(sock, &send, sizeof(snd_t), 0 );
+	fprintf(stderr, "Client asking server for information\n");
+	sendto(sock, (void*) &send, sizeof(snd_t), NULL, 0);
 
-	fprintf(stderr, "waiting on server\n");
-	n = recv(sock, &rcv, sizeof(snd_t), 0);
+	fprintf(stderr, "Waiting on server...\n");
+	n = recvfrom(sock, (void*) &rcv, sizeof(snd_t), NULL, 0);
+	printf("Here\n");
 	if (n <= 0)
 		err_sys("Failed to get init message from server");
 
