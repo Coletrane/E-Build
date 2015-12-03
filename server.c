@@ -21,15 +21,6 @@ void order_init()
 	order_size = random() % 40001 + 10000;
 }
 
-void init_client_params(client_param *client, int id)
-{
-	client->id = id;
-	client->cap = random() % 491 + 10;
-	client->dur = random() % 401 + 100;
-	client->num_iter = 0;
-	client->total_dur = 0;
-}
-
 int main()
 {
 	struct sockaddr_in fsin;
@@ -58,10 +49,17 @@ int main()
 					client_count++;
 					printf("Received Message Code: 1 initializing client: %d\n",
 							client_count);
-					init_client_params(&client[client_count], client_count);
-					printf("here\n");
+
+					// Initialize client's parameters
+					client[client_count].id = client_count;
+					client[client_count].cap = random() % 491 + 10;
+					client[client_count].dur = random() % 401 + 100;
+					client[client_count].num_iter = 0;
+					client[client_count].total_dur = 0;
+
+					// Compose and send a message to the client
 					snd->msg_code = 1;
-					snd->param.cap = client[client_count].cap;
+					snd->param.cap = client.cap;
 					snd->param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv->client_id);
