@@ -88,7 +88,7 @@ int main()
 					printf("Received from Client: %d Message Code: 3 (Completed Iteration)\n",
 							rcv->client_id);
 					client[rcv->client_id].num_iter++;
-					client[rcv->client_id].num_made += rcv->num_made;
+					client[rcv->client_id].num_made += rcv->num_make;
 					client[rcv->client_id].total_dur += client[rcv->client_id].total_dur;
 					break;
 			}
