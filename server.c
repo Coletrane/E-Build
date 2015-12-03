@@ -51,9 +51,8 @@ int main()
 					snd.param.cap = client[client_count].cap;
 					snd.param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
-							rcv->client_id);
-					sendto(sock, (msg_t *) &snd, sizeof(msg_t), 0, (SA *) &fsin,
-							alen);
+							client_count);
+					sendto(sock, (msg_t *) &snd, sizeof(msg_t), 0, (SA *) &fsin, alen);
 					printf("here\n");
 					break;
 
