@@ -51,11 +51,13 @@ int main()
 							client_count);
 
 					// Initialize client's parameters
+					/**
 					client[client_count].id = client_count;
 					client[client_count].cap = random() % 491 + 10;
 					client[client_count].dur = random() % 401 + 100;
 					client[client_count].num_iter = 0;
 					client[client_count].total_dur = 0;
+					**/
 
 					// Compose and send a message to the client
 					snd->msg_code = 1;
