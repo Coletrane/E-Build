@@ -6,9 +6,8 @@
 #include <stdlib.h>
 #include "server.h"
 
-int order_size = 0;
 int ord_count = 0;		// Sentinel for calling srandom only once
-int client_count = 0;
+
 
 // Order function: generates random seed and random order size
 void order_init()
@@ -30,7 +29,8 @@ int main()
 	int sock;
 	unsigned int alen;
 	int num_complete = 0;
-
+	int client_count = 0;
+	int order_size = 0;
 
 	order_init();
 
