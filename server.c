@@ -41,7 +41,6 @@ int main()
 	int num_complete = 0;
 
 
-
 	order_init();
 
 	sock = serverUDPsock(port);
@@ -50,7 +49,8 @@ int main()
 	printf("Server waiting...\n");
 	while (1)
 	{
-		if (recvfrom(sock, rcv, sizeof(rcv_t), 0, (SA *) &fsin, sizeof(fsin)) > 0)
+		alen = sizeof(fsin);
+		if (recvfrom(sock, rcv, sizeof(rcv_t), 0, (SA *) &fsin, &alen) > 0)
 		{
 			printf("Recieved!\n");
 			switch (rcv->msg_code)
@@ -66,7 +66,7 @@ int main()
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv->client_id);
 					sendto(sock, (void *) snd, sizeof(snd_t), 0, (SA *) &fsin,
-							sizeof(fsin));
+							&alen);
 					break;
 
 				case 2 :
@@ -78,7 +78,7 @@ int main()
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd->num_make);
 						sendto(sock, (void *) snd, sizeof(snd_t), 0,
-								(SA *) &fsin, sizeof(fsin));
+								(SA *) &fsin, &alen);
 					}
 					else if (order_size < client[rcv->client_id].cap && order_size > 0)
 					{
@@ -86,7 +86,7 @@ int main()
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd->num_make);
 						sendto(sock, (void *) snd, sizeof(snd_t), 0,
-								(SA *) &fsin, sizeof(fsin));
+								(SA *) &fsin, &alen);
 					}
 					else
 					{
@@ -94,7 +94,7 @@ int main()
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
 								rcv->client_id);
 						sendto(sock, (void *) snd, sizeof(snd_t), 0,
-								(SA *) &fsin, sizeof(fsin));
+								(SA *) &fsin, &alen);
 					}
 					break;
 
