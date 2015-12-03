@@ -14,8 +14,8 @@
 int main(int argc, char *argv[]){
 	char *host = "localhost";
 	char *service = "server";
-	snd_t *snd;
-	rcv_t *rcv;
+	msg_t *snd;
+	msg_t *rcv;
 	int s, n;
 
 
@@ -38,10 +38,10 @@ int main(int argc, char *argv[]){
 	// Compose and send message to server for parameter initialization
 	snd->msg_code = 1;
 	fprintf(stderr, "Client asking server for information\n");
-	send(s, (void *) snd, sizeof(snd_t)+1, 0);
+	send(s, (void *) snd, sizeof(msg_t)+1, 0);
 
 	fprintf(stderr, "Waiting on server...\n");
-	n = recv(s, (void *) rcv, sizeof(snd_t)+1, 0);
+	n = recv(s, (void *) rcv, sizeof(msg_t)+1, 0);
 
 	if (n <= 0)
 		err_sys("Failed to get init message from server");
