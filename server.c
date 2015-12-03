@@ -45,15 +45,16 @@ int main()
 					client[client_count].num_iter = 0;
 					client[client_count].total_dur = 0;
 
-					printf("here\n");
+
 					// Compose and send a message to the client
 					snd.msg_code = 1;
 					snd.param.cap = client[client_count].cap;
 					snd.param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv->client_id);
-					sendto(sock, (void *) &snd, sizeof(msg_t), 0, (SA *) &fsin,
-							&alen);
+					sendto(sock, &snd, sizeof(msg_t), 0, (SA *) &fsin,
+							alen);
+					printf("here\n");
 					break;
 
 				case 2 :
@@ -64,24 +65,24 @@ int main()
 						snd.num_make = client[rcv->client_id].cap;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd.num_make);
-						sendto(sock, (void *) &snd, sizeof(msg_t), 0,
-								(SA *) &fsin, &alen);
+						sendto(sock, &snd, sizeof(msg_t), 0,
+								(SA *) &fsin, alen);
 					}
 					else if (order_size < client[rcv->client_id].cap && order_size > 0)
 					{
 						snd.num_make = order_size;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd.num_make);
-						sendto(sock, (void *) &snd, sizeof(msg_t), 0,
-								(SA *) &fsin, &alen);
+						sendto(sock, &snd, sizeof(msg_t), 0,
+								(SA *) &fsin, alen);
 					}
 					else
 					{
 						snd.num_make = 0;
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
 								rcv->client_id);
-						sendto(sock, (void *) &snd, sizeof(msg_t), 0,
-								(SA *) &fsin, &alen);
+						sendto(sock, &snd, sizeof(msg_t), 0,
+								(SA *) &fsin, alen);
 					}
 					break;
 
