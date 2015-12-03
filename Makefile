@@ -28,7 +28,6 @@ opening.o: state.h shipping.h shipping.c
 	gcc -c shipping.c -w
 
 clean:
-	rm *.o
 	rm driver
 	rm server
 	rm client

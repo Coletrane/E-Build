@@ -32,13 +32,14 @@ void init_client_params(client_param *client, int id)
 
 int main()
 {
-	struct sockaddr_in fsin[NUM_CLIENTS +1];
+	struct sockaddr_in fsin;
 	snd_t snd;
 	rcv_t rcv;
-	unsigned short port;
+	unsigned short port = 47;
 	int sock;
 	unsigned int alen;
 	int num_complete = 0;
+
 
 
 	order_init();
@@ -49,12 +50,12 @@ int main()
 	printf("Server waiting...\n");
 	while (1)
 	{
-		if (recv(sock, &rcv, sizeof(rcv_t), 0) > 0)
+		if (recvfrom,(sock, &rcv, sizeof(rcv_t), 0, &fsin, sizeof(fsin)) > 0)
 		{
 			switch (rcv.msg_code)
 			{
 				case 1 :
-					client_count += 1;
+					client_count++;
 					printf("Received Message Code: 1 initializing client: %d\n",
 							client_count);
 					init_client_params(&client[client_count], client_count);
@@ -63,8 +64,8 @@ int main()
 					snd.param.dur = client[rcv.client_id].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv.client_id);
-					sendto(sock, &snd, sizeof(snd_t), 0, (SA *) &fsin[rcv.client_id],
-							sizeof(fsin[rcv.client_id]));
+					sendto(sock, &snd, sizeof(snd_t), 0, (SA *) &fsin,
+							sizeof(fsin));
 					break;
 
 				case 2 :
@@ -76,7 +77,7 @@ int main()
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv.client_id, snd.num_make);
 						sendto(sock, &snd, sizeof(snd_t), 0,
-								(SA *) &fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+								(SA *) &fsin, sizeof(fsin));
 					}
 					else if (order_size < client[rcv.client_id].cap && order_size > 0)
 					{
@@ -84,7 +85,7 @@ int main()
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv.client_id, snd.num_make);
 						sendto(sock, &snd, sizeof(snd_t), 0,
-								(SA *) &fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+								(SA *) &fsin, sizeof(fsin));
 					}
 					else
 					{
@@ -92,7 +93,7 @@ int main()
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
 								rcv.client_id);
 						sendto(sock, &snd, sizeof(snd_t), 0,
-								(SA *) &fsin[rcv.client_id], sizeof(fsin[rcv.client_id]));
+								(SA *) &fsin, sizeof(fsin));
 					}
 					break;
 
