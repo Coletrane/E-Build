@@ -52,7 +52,6 @@ int main()
 		alen = sizeof(fsin);
 		if (recvfrom(sock, rcv, sizeof(rcv_t), 0, (SA *) &fsin, &alen) > 0)
 		{
-			printf("Recieved!\n");
 			switch (rcv->msg_code)
 			{
 				case 1 :
@@ -60,9 +59,10 @@ int main()
 					printf("Received Message Code: 1 initializing client: %d\n",
 							client_count);
 					init_client_params(&client[client_count], client_count);
+					printf("here\n");
 					snd->msg_code = 1;
-					snd->param.cap = client[rcv->client_id].cap;
-					snd->param.dur = client[rcv->client_id].dur;
+					snd->param.cap = client[client_count].cap;
+					snd->param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							rcv->client_id);
 					sendto(sock, (void *) snd, sizeof(snd_t), 0, (SA *) &fsin,
