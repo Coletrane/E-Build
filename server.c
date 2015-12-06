@@ -23,7 +23,7 @@ int main()
 	// Declare and initialize order size
 	int order_size;
 	srandom(time(NULL));
-	order_size = 10000;///random() % 40001 + 10000;
+	order_size = random() % 40001 + 10000;
 
 	sock = serverUDPsock(port);
 
