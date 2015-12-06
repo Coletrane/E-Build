@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 	s = clientUDPsock(host, service);
 
 	// Compose and send message to server for parameter initialization
-	snd->msg_code = 1;
+	//snd->msg_code = 1;
 	fprintf(stderr, "Client asking server for information\n");
 	send(s, (void *) snd, sizeof(msg_t)+1, 0);
 
