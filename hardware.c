@@ -77,6 +77,14 @@ void getPaymentMethod()
 }
 void dispatchFactoryLines()
 {
+	pid_t pid = fork();
+	if (pid == 0)
+		execl("server", NULL);
+
+	printf("All parts manufactured.\n");
+
+	/*PHASE 3 CODE*
+
     // Pick a random order size [1000-2000]
     order_init();
 
@@ -135,8 +143,8 @@ void dispatchFactoryLines()
 	
     //Confirm end of manufacturing
 	sem_wait(&shared->prod_running);
-    printf("All parts manufactured.\n");
-    shutDownFactoryLines(shared, shmid);
+	shutDownFactoryLines(shared, shmid);
+	**/
 
 }
 void shutDownFactoryLines(shared_data *shared, int shmid)
@@ -147,7 +155,6 @@ void shutDownFactoryLines(shared_data *shared, int shmid)
 
     shmdt(shared);
 	shmctl(shmid, IPC_RMID, NULL);
-
 
 }
 void getAddress()
