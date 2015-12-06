@@ -51,7 +51,7 @@ int main()
 					snd.param.dur = client[client_count].dur;
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							client_count);
-					sendto(sock, (msg_t *) &snd, sizeof(msg_t), 0, (SA *) &fsin, alen);
+					sendto(sock, (void *) &snd, sizeof(msg_t)+1, 0, (SA *) &fsin, alen);
 					printf("here\n");
 					break;
 
@@ -64,7 +64,7 @@ int main()
 						snd.num_make = client[rcv->client_id].cap;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd.num_make);
-						sendto(sock, &snd, sizeof(msg_t), 0,
+						sendto(sock, (void *) &snd, sizeof(msg_t), 0,
 								(SA *) &fsin, alen);
 					}
 					else if (order_size < client[rcv->client_id].cap && order_size > 0)
@@ -73,7 +73,7 @@ int main()
 						snd.num_make = order_size;
 						printf("Sending to Client: %d Make Request for %d items\n",
 								rcv->client_id, snd.num_make);
-						sendto(sock, &snd, sizeof(msg_t), 0,
+						sendto(sock, (void *) &snd, sizeof(msg_t), 0,
 								(SA *) &fsin, alen);
 					}
 					else
@@ -81,7 +81,7 @@ int main()
 						snd.num_make = 0;
 						printf("Sending to Client: %d Message Code: 2 Stop Request\n",
 								rcv->client_id);
-						sendto(sock, &snd, sizeof(msg_t), 0,
+						sendto(sock, (void *) &snd, sizeof(msg_t), 0,
 								(SA *) &fsin, alen);
 					}
 					break;
