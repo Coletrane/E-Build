@@ -63,6 +63,7 @@ int main()
 					printf("Sending to Client: %d Message Code: 1 (Initialize Client)\n",
 							client_count);
 					sendto(sock, (msg_t *) &snd, sizeof(msg_t), 0, (SA *) &fsin, alen);
+					printf("here\n");
 					break;
 
 				case 2 :
