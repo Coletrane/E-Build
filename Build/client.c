@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
 				printf("Line: %d has completed its portion of the order\n", param.id);
 				snd.msg_code = 0;
 				send(s, (void *) &snd, sizeof(msg_t), 0);
-                printf("Line: %d closing socket and exiting\n");
+                printf("Line: %d closing socket and exiting\n", param.id);
 				exit(0);
 				break;
 
